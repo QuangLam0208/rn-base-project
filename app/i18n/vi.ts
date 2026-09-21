@@ -32,6 +32,18 @@ const vi: Translations = {
   },
   mainNavigator: {
     homeTab: "Trang chủ",
+    coursesTab: "Khoá học",
+  },
+  coursesScreen: {
+    headingOngoing: "Đang diễn ra",
+    buttonMore: "Xem thêm",
+    buttonLess: "Thu gọn",
+    syllabusTitle: "Giáo trình",
+    emptySyllabus: "Không có giáo trình",
+    emptyCourses: "Không có khoá học nào",
+    freePrice: "Miễn phí",
+    errorLoadCourses: "Không thể tải danh sách khoá học.",
+    errorLoadSyllabus: "Không thể tải danh sách giáo trình.",
   },
   settingsScreen: {
     title: "Cài đặt",
@@ -49,6 +61,9 @@ const vi: Translations = {
     updateDownloading: "Đang tải bản cập nhật…",
     updateDisabledDev: "Không thể kiểm tra cập nhật trên bản development.",
     updateError: "Không kiểm tra được cập nhật. Thử lại sau.",
+    logout: "Đăng xuất",
+    logoutConfirmTitle: "Đăng xuất",
+    logoutConfirmMessage: "Bạn có chắc chắn muốn đăng xuất không?",
   },
   loginScreen: {
     brandName: "iLearning",

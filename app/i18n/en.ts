@@ -30,6 +30,18 @@ const en = {
   },
   mainNavigator: {
     homeTab: "Home",
+    coursesTab: "Courses",
+  },
+  coursesScreen: {
+    headingOngoing: "Ongoing",
+    buttonMore: "View more",
+    buttonLess: "Collapse",
+    syllabusTitle: "Syllabus",
+    emptySyllabus: "No syllabus available",
+    emptyCourses: "No courses available",
+    freePrice: "Free",
+    errorLoadCourses: "Failed to load courses.",
+    errorLoadSyllabus: "Failed to load syllabus.",
   },
   settingsScreen: {
     title: "Settings",
@@ -47,6 +59,9 @@ const en = {
     updateDownloading: "Downloading update…",
     updateDisabledDev: "Update check is disabled in this development build.",
     updateError: "Couldn't check for update. Try again later.",
+    logout: "Logout",
+    logoutConfirmTitle: "Logout",
+    logoutConfirmMessage: "Are you sure you want to log out?",
   },
   loginScreen: {
     brandName: "iLearning",

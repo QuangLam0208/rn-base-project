@@ -1,5 +1,6 @@
 import { ContainerModule } from "inversify"
 
+import { CoursesViewModel } from "@/screens/Courses/CoursesViewModel"
 import { HomeViewModel } from "@/screens/Home/HomeViewModel"
 import { LoginViewModel } from "@/screens/Login/LoginViewModel"
 
@@ -12,4 +13,5 @@ import { LoginViewModel } from "@/screens/Login/LoginViewModel"
 export const viewModelModule = new ContainerModule((bind) => {
   bind(HomeViewModel).toSelf()
   bind(LoginViewModel).toSelf()
+  bind(CoursesViewModel).toSelf()
 })

@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Icon } from "@/components/Icon"
 import { translate } from "@/i18n/translate"
+import { CoursesScreen } from "@/screens/Courses/CoursesScreen"
 import { HomeScreen } from "@/screens/Home/HomeScreen"
 import { useAppTheme } from "@/theme/context"
 
@@ -11,10 +12,7 @@ import type { MainTabParamList } from "./navigationTypes"
 const Tab = createBottomTabNavigator<MainTabParamList>()
 
 /**
- * The main navigator: a bottom tab bar with the app's tabs. Just one
- * example tab (Home) in this base project — add more `Tab.Screen`s
- * here as real screens are built, following the "Registering a new
- * screen" steps in CLAUDE.md.
+ * The main navigator: a bottom tab bar with the app's tabs.
  *
  * More info: https://reactnavigation.org/docs/bottom-tab-navigator/
  * @returns {JSX.Element} The rendered `MainTabNavigator`.
@@ -42,6 +40,16 @@ export function MainTabNavigator() {
           tabBarLabel: translate("mainNavigator:homeTab"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="menu" color={focused ? colors.tint : colors.tintInactive} size={28} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Courses"
+        component={CoursesScreen}
+        options={{
+          tabBarLabel: translate("mainNavigator:coursesTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="courses" color={focused ? colors.tint : colors.tintInactive} size={28} />
           ),
         }}
       />

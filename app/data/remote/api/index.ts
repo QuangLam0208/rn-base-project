@@ -69,13 +69,18 @@ export class Api {
       request.headers = request.headers ?? {}
       request.headers["X-tenant"] = AUTH_CONFIG.TENANT
 
-      if (request.headers.IgnoreAuth === "1") {
+      const ignoreAuth = request.headers.IgnoreAuth === "1" || request.headers.ignoreauth === "1"
+      if (ignoreAuth) {
         delete request.headers.IgnoreAuth
+        delete request.headers.ignoreauth
         return
       }
 
-      if (request.headers.UseBasicAuth === "1") {
+      const useBasicAuth =
+        request.headers.UseBasicAuth === "1" || request.headers.usebasicauth === "1"
+      if (useBasicAuth) {
         delete request.headers.UseBasicAuth
+        delete request.headers.usebasicauth
         request.headers.Authorization = getBasicAuthHeader()
         return
       }
