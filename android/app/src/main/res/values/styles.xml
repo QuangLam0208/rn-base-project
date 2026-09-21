@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <style name="AppTheme" parent="Theme.EdgeToEdge.Light">
+    <item name="android:windowBackground">@color/splashscreen_background</item>
     <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="enforceNavigationBarContrast">false</item>

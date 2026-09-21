@@ -16,9 +16,24 @@ export const customFontsToLoad = {
   spaceGroteskMedium,
   spaceGroteskSemiBold,
   spaceGroteskBold,
+  "SFPro-Regular": require("@assets/fonts/sf_regular.otf"),
+  "SFPro-Medium": require("@assets/fonts/sf_pro_display_medium.otf"),
+  "SFPro-SemiBold": require("@assets/fonts/sf_pro_display_semibold.otf"),
+  "SFPro-Bold": require("@assets/fonts/sf_bold.otf"),
+  "SFPro-Italic": require("@assets/fonts/sf_italic.otf"),
+  "SFPro-BoldItalic": require("@assets/fonts/sf_bold_italic.otf"),
 }
 
 const fonts = {
+  sfPro: {
+    light: "SFPro-Regular",
+    normal: "SFPro-Regular",
+    medium: "SFPro-Medium",
+    semiBold: "SFPro-SemiBold",
+    bold: "SFPro-Bold",
+    italic: "SFPro-Italic",
+    boldItalic: "SFPro-BoldItalic",
+  },
   spaceGrotesk: {
     // Cross-platform Google font.
     light: "spaceGroteskLight",
@@ -57,9 +72,13 @@ export const typography = {
    */
   fonts,
   /**
-   * The primary font. Used in most places.
+   * The primary font. Used in most places (matches Android application_font: SF Pro).
    */
-  primary: fonts.spaceGrotesk,
+  primary: fonts.sfPro,
+  /**
+   * Space Grotesk alternative font.
+   */
+  spaceGrotesk: fonts.spaceGrotesk,
   /**
    * An alternate font used for perhaps titles and stuff.
    */

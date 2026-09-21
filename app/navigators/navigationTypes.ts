@@ -15,6 +15,7 @@ export type MainTabParamList = {
 // App Stack Navigator types
 export type AppStackParamList = {
   Splash: undefined
+  Login: undefined
   MainTabs: NavigatorScreenParams<MainTabParamList>
   Settings: undefined
   // 🔥 Your screens go here

@@ -5,6 +5,8 @@ import { getGeneralApiProblem } from "./apiProblem"
 import { ApiService } from "./ApiService"
 
 import { Api } from "./index"
+import { LoginRequest } from "@/data/model/api/request/user/LoginRequest"
+import { LoginResponse } from "@/data/model/api/response/user/LoginResponse"
 
 /**
  * Concrete implementation of ApiService — the HTTP layer + response
@@ -43,5 +45,15 @@ export class ApiServiceImpl implements ApiService {
     }
 
     return response.data
+  }
+
+  async login(request: LoginRequest): Promise<LoginResponse> {
+    return this.request<LoginResponse>(() =>
+      this.api.apisauce.post<LoginResponse>("/api/token", request, {
+        headers: {
+          UseBasicAuth: "1",
+        },
+      }),
+    )
   }
 }

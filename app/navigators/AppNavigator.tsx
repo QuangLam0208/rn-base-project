@@ -13,6 +13,7 @@ import Config from "@/config"
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
 import { SettingsScreen } from "@/screens/Settings/SettingsScreen"
 import { SplashScreen } from "@/screens/Splash/SplashScreen"
+import { LoginScreen } from "@/screens/Login/LoginScreen"
 import { useAppTheme } from "@/theme/context"
 
 import { MainTabNavigator } from "./MainTabNavigator"
@@ -37,7 +38,6 @@ const AppStack = function AppStack() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        navigationBarColor: colors.background,
         contentStyle: {
           backgroundColor: colors.background,
         },
@@ -45,6 +45,7 @@ const AppStack = function AppStack() {
       initialRouteName="Splash"
     >
       <Stack.Screen name="Splash" component={SplashScreen} />
+      <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="MainTabs" component={MainTabNavigator} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
       {/** 🔥 Your screens go here */}

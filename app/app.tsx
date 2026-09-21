@@ -21,6 +21,7 @@ import "./utils/gestureHandler"
 import { useEffect, useState } from "react"
 import { useFonts } from "expo-font"
 import * as Linking from "expo-linking"
+import * as SplashScreen from "expo-splash-screen"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { useMMKVString } from "react-native-mmkv"
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context"
@@ -37,15 +38,19 @@ import { loadDateFnsLocale } from "./utils/formatDate"
 
 initCrashReporting()
 
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync()
+
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
 // Web linking configuration
 const prefix = Linking.createURL("/")
 const config = {
   screens: {
-    Splash: "",
+    Splash: "splash",
+    Login: "login",
     MainTabs: {
-      path: "",
+      path: "main",
       screens: {
         Home: "home",
       },
@@ -80,13 +85,18 @@ export function App() {
       .then(() => loadDateFnsLocale())
   }, [])
 
+  const isReady =
+    isNavigationStateRestored && isI18nInitialized && (areFontsLoaded || Boolean(fontLoadError))
+
+  useEffect(() => {
+    if (isReady) {
+      SplashScreen.hideAsync().catch(() => {})
+    }
+  }, [isReady])
+
   // Before we show the app, we have to wait for our state to be ready.
-  // In the meantime, don't render anything. This will be the background
-  // color set in native by rootView's background color.
-  // In iOS: application:didFinishLaunchingWithOptions:
-  // In Android: https://stackoverflow.com/a/45838109/204044
-  // You can replace with your own loading component if you wish.
-  if (!isNavigationStateRestored || !isI18nInitialized || (!areFontsLoaded && !fontLoadError)) {
+  // In the meantime, don't render anything — native splash screen remains visible.
+  if (!isReady) {
     return null
   }
 

@@ -133,6 +133,9 @@ export const iconRegistry = {
   slack: require("@assets/icons/demo/slack.png"), // @demo remove-current-line
   view: require("@assets/icons/view.png"),
   x: require("@assets/icons/x.png"),
+  qrCode: require("@assets/icons/ic_qr_code.png"),
+  visibility: require("@assets/icons/ic_visibility.png"),
+  visibilityOff: require("@assets/icons/ic_visibility_off.png"),
 }
 
 const $imageStyleBase: ImageStyle = {

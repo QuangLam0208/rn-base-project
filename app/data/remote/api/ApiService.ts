@@ -1,3 +1,6 @@
+import { LoginRequest } from "@/data/model/api/request/user/LoginRequest";
+import { LoginResponse } from "@/data/model/api/response/user/LoginResponse";
+
 /**
  * Every backend endpoint this app calls — mirrors ai-project-android's
  * ApiService.java (a single Retrofit interface listing every request):
@@ -14,4 +17,6 @@
  * "`ApiService`: interface + impl, one DTO per file" section for the
  * full convention and a worked example.
  */
-export interface ApiService {}
+export interface ApiService {
+  login(request: LoginRequest): Promise<LoginResponse>
+}

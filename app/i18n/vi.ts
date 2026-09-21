@@ -50,6 +50,19 @@ const vi: Translations = {
     updateDisabledDev: "Không thể kiểm tra cập nhật trên bản development.",
     updateError: "Không kiểm tra được cập nhật. Thử lại sau.",
   },
+  loginScreen: {
+    brandName: "iLearning",
+    labelUsername: "Người dùng",
+    hintUsername: "Username",
+    labelPassword: "Mật mã",
+    hintPassword: "Password",
+    loginWithQr: "Đăng nhập bằng mã QR",
+    loginButton: "Đăng nhập",
+    forgotPassword: "Quên mật khẩu?",
+    validationEmpty: "Vui lòng nhập đầy đủ thông tin",
+    loginSuccess: "Đăng nhập thành công!",
+    loginFailed: "Đăng nhập thất bại, vui lòng kiểm tra lại!",
+  },
 }
 
 export default vi

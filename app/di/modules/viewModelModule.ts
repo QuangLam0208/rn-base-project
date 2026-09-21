@@ -1,6 +1,7 @@
 import { ContainerModule } from "inversify"
 
 import { HomeViewModel } from "@/screens/Home/HomeViewModel"
+import { LoginViewModel } from "@/screens/Login/LoginViewModel"
 
 /**
  * ViewModel bindings — mirrors ai-project-android's Dagger
@@ -10,4 +11,5 @@ import { HomeViewModel } from "@/screens/Home/HomeViewModel"
  */
 export const viewModelModule = new ContainerModule((bind) => {
   bind(HomeViewModel).toSelf()
+  bind(LoginViewModel).toSelf()
 })

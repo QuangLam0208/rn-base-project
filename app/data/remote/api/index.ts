@@ -22,6 +22,23 @@ export const DEFAULT_API_CONFIG: ApiConfig = {
   timeout: 10000,
 }
 
+export const AUTH_CONFIG = {
+  CLIENT_ID: "abc_client",
+  CLIENT_SECRET: "abc123",
+  TENANT: "moviehub",
+} as const
+
+/**
+ * Tạo header Basic Auth từ Client ID và Client Secret động.
+ */
+export function getBasicAuthHeader(
+  clientId: string = AUTH_CONFIG.CLIENT_ID,
+  clientSecret: string = AUTH_CONFIG.CLIENT_SECRET,
+): string {
+  const credentials = `${clientId}:${clientSecret}`
+  return `Basic ${btoa(credentials)}`
+}
+
 /**
  * Manages all requests to the API. You can use this class to build out
  * various requests that you need to call from your backend API.
@@ -44,20 +61,27 @@ export class Api {
       timeout: this.config.timeout,
       headers: {
         Accept: "application/json",
+        "X-tenant": AUTH_CONFIG.TENANT,
       },
     })
 
-    // Attach the auth token to every outgoing request, mirroring
-    // ai-project-android's AuthInterceptor. authStore has no token
-    // until something in your app calls authStore.setToken() — there's
-    // no Login screen in this base project, just the plumbing that a
-    // real one would plug into (see CLAUDE.md's DI section on why
-    // authStore is a plain imported singleton, not a second property
-    // injection alongside repository).
     this.apisauce.addAsyncRequestTransform(async (request) => {
+      request.headers = request.headers ?? {}
+      request.headers["X-tenant"] = AUTH_CONFIG.TENANT
+
+      if (request.headers.IgnoreAuth === "1") {
+        delete request.headers.IgnoreAuth
+        return
+      }
+
+      if (request.headers.UseBasicAuth === "1") {
+        delete request.headers.UseBasicAuth
+        request.headers.Authorization = getBasicAuthHeader()
+        return
+      }
+
       const token = this.authStore.token
       if (token) {
-        request.headers = request.headers ?? {}
         request.headers.Authorization = `Bearer ${token}`
       }
     })

@@ -48,6 +48,19 @@ const en = {
     updateDisabledDev: "Update check is disabled in this development build.",
     updateError: "Couldn't check for update. Try again later.",
   },
+  loginScreen: {
+    brandName: "iLearning",
+    labelUsername: "Username",
+    hintUsername: "Username",
+    labelPassword: "Password",
+    hintPassword: "Password",
+    loginWithQr: "Login with QR code",
+    loginButton: "Sign In",
+    forgotPassword: "Forgot password?",
+    validationEmpty: "Please fill in all required information",
+    loginSuccess: "Login successful!",
+    loginFailed: "Login failed, please check your credentials!",
+  },
 }
 
 export default en

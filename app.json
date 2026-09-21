@@ -6,9 +6,7 @@
   "orientation": "portrait",
   "userInterfaceStyle": "automatic",
   "icon": "./assets/images/app-icon-all.png",
-  "runtimeVersion": {
-    "policy": "appVersion"
-  },
+  "runtimeVersion": "1.0.0",
   "newArchEnabled": true,
   "jsEngine": "hermes",
   "assetBundlePatterns": [
@@ -66,6 +64,7 @@
         }
       }
     ],
+    "@react-native-firebase/crashlytics",
     "./plugins/withIosModularHeaders.js"
   ],
   "experiments": {
