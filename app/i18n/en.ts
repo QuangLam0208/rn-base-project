@@ -31,6 +31,8 @@ const en = {
   mainNavigator: {
     homeTab: "Home",
     coursesTab: "Courses",
+    mentorsTab: "Mentors",
+    companiesTab: "Companies",
   },
   coursesScreen: {
     headingOngoing: "Ongoing",
@@ -42,6 +44,27 @@ const en = {
     freePrice: "Free",
     errorLoadCourses: "Failed to load courses.",
     errorLoadSyllabus: "Failed to load syllabus.",
+  },
+  mentorsScreen: {
+    title: "Mentors",
+    emptyMentors: "No mentors found",
+    errorLoadMentors: "Failed to load mentors.",
+  },
+  mentorDetailScreen: {
+    title: "Mentor Detail",
+    aboutTitle: "About",
+    noDescription: "No description available.",
+    emailLabel: "Email",
+    phoneLabel: "Phone",
+    roleLabel: "Role",
+    errorDetail: "Failed to load mentor profile.",
+    retryButton: "Retry",
+  },
+  companiesScreen: {
+    title: "Companies",
+    subtitlePartner: "Corporate partner",
+    emptyCompanies: "No company information found",
+    errorLoadCompanies: "Failed to load companies.",
   },
   settingsScreen: {
     title: "Settings",

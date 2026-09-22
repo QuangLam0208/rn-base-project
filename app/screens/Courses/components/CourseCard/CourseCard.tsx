@@ -13,11 +13,12 @@ import { observer } from "mobx-react-lite"
 
 import { Icon } from "@/components/Icon"
 import { Text } from "@/components/Text"
-import Config from "@/config"
 import { CourseResponse } from "@/data/model/api/response/course/CourseResponse"
 import { SyllabusResponse } from "@/data/model/api/response/course/SyllabusResponse"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
+import { getAvatarUri } from "@/utils/imageUtils"
+import { parseBulletLines } from "@/utils/textUtils"
 
 import { SyllabusItem } from "../SyllabusItem/SyllabusItem"
 
@@ -30,34 +31,6 @@ export interface CourseCardProps {
   onToggleSyllabus: () => void
   onToggleSyllabusItem: (id: number) => void
   onPressCard?: () => void
-}
-
-function parseBulletLines(rawText?: string | null): string[] {
-  if (!rawText) return []
-  return rawText
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)
-    .map((line) => {
-      if (line.startsWith("•") || line.startsWith("-") || line.startsWith("*")) {
-        return line.substring(1).trim()
-      }
-      return line
-    })
-    .filter((line) => line.length > 0)
-}
-
-function getAvatarUri(avatar?: string | null): string | null {
-  if (!avatar || avatar.trim() === "" || avatar.trim().toLowerCase() === "null") {
-    return null
-  }
-  if (avatar.startsWith("http://") || avatar.startsWith("https://")) {
-    return avatar
-  }
-  const baseUrl = Config.API_URL
-  const cleanBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl
-  const cleanPath = avatar.startsWith("/") ? avatar : `/${avatar}`
-  return `${cleanBase}/v1/file/download${cleanPath}`
 }
 
 export const CourseCard = observer(function CourseCard({

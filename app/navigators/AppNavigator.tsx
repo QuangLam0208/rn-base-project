@@ -11,6 +11,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
 import Config from "@/config"
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
+import { MentorDetailScreen } from "@/screens/MentorDetail/MentorDetailScreen"
 import { SettingsScreen } from "@/screens/Settings/SettingsScreen"
 import { SplashScreen } from "@/screens/Splash/SplashScreen"
 import { LoginScreen } from "@/screens/Login/LoginScreen"
@@ -48,6 +49,7 @@ const AppStack = function AppStack() {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="MainTabs" component={MainTabNavigator} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="MentorDetail" component={MentorDetailScreen} />
       {/** 🔥 Your screens go here */}
       {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>

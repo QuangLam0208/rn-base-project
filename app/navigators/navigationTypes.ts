@@ -7,10 +7,14 @@ import {
 } from "@react-navigation/native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
+import { MentorResponse } from "@/data/model/api/response/mentor/MentorResponse"
+
 // Main Tab Navigator types
 export type MainTabParamList = {
   Home: undefined
   Courses: undefined
+  Mentors: undefined
+  Companies: undefined
 }
 
 // App Stack Navigator types
@@ -19,6 +23,7 @@ export type AppStackParamList = {
   Login: undefined
   MainTabs: NavigatorScreenParams<MainTabParamList>
   Settings: undefined
+  MentorDetail: { mentorId: number; initialMentor?: MentorResponse }
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }

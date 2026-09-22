@@ -33,6 +33,8 @@ const vi: Translations = {
   mainNavigator: {
     homeTab: "Trang chủ",
     coursesTab: "Khoá học",
+    mentorsTab: "Mentor",
+    companiesTab: "Doanh nghiệp",
   },
   coursesScreen: {
     headingOngoing: "Đang diễn ra",
@@ -44,6 +46,27 @@ const vi: Translations = {
     freePrice: "Miễn phí",
     errorLoadCourses: "Không thể tải danh sách khoá học.",
     errorLoadSyllabus: "Không thể tải danh sách giáo trình.",
+  },
+  mentorsScreen: {
+    title: "Mentor",
+    emptyMentors: "Không có mentor nào",
+    errorLoadMentors: "Không thể tải danh sách mentor.",
+  },
+  mentorDetailScreen: {
+    title: "Chi tiết Mentor",
+    aboutTitle: "Giới thiệu",
+    noDescription: "Chưa có thông tin giới thiệu.",
+    emailLabel: "Email",
+    phoneLabel: "Điện thoại",
+    roleLabel: "Vai trò",
+    errorDetail: "Không thể tải thông tin chi tiết mentor.",
+    retryButton: "Thử lại",
+  },
+  companiesScreen: {
+    title: "Doanh nghiệp",
+    subtitlePartner: "Đối tác doanh nghiệp",
+    emptyCompanies: "Chưa có thông tin doanh nghiệp nào",
+    errorLoadCompanies: "Không thể tải danh sách doanh nghiệp.",
   },
   settingsScreen: {
     title: "Cài đặt",

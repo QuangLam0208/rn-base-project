@@ -3,8 +3,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Icon } from "@/components/Icon"
 import { translate } from "@/i18n/translate"
+import { CompaniesScreen } from "@/screens/Companies/CompaniesScreen"
 import { CoursesScreen } from "@/screens/Courses/CoursesScreen"
 import { HomeScreen } from "@/screens/Home/HomeScreen"
+import { MentorsScreen } from "@/screens/Mentors/MentorsScreen"
 import { useAppTheme } from "@/theme/context"
 
 import type { MainTabParamList } from "./navigationTypes"
@@ -50,6 +52,26 @@ export function MainTabNavigator() {
           tabBarLabel: translate("mainNavigator:coursesTab"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="courses" color={focused ? colors.tint : colors.tintInactive} size={28} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Mentors"
+        component={MentorsScreen}
+        options={{
+          tabBarLabel: translate("mainNavigator:mentorsTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="mentor" color={focused ? colors.tint : colors.tintInactive} size={28} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Companies"
+        component={CompaniesScreen}
+        options={{
+          tabBarLabel: translate("mainNavigator:companiesTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="company" color={focused ? colors.tint : colors.tintInactive} size={28} />
           ),
         }}
       />

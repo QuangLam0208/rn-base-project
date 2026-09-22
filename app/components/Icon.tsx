@@ -141,6 +141,9 @@ export const iconRegistry = {
   plus: require("@assets/icons/ic_plus.png"),
   minus: require("@assets/icons/ic_minus.png"),
   logout: require("@assets/icons/ic_logout.png"),
+  mentor: require("@assets/icons/ic_mentor.png"),
+  company: require("@assets/icons/ic_company.png"),
+  quote: require("@assets/icons/ic_quote.png"),
 }
 
 const $imageStyleBase: ImageStyle = {

@@ -10,6 +10,8 @@ import { ResponseWrapper } from "@/data/model/api/ResponseWrapper"
 import { LoginRequest } from "@/data/model/api/request/user/LoginRequest"
 import { CourseResponse } from "@/data/model/api/response/course/CourseResponse"
 import { SyllabusResponse } from "@/data/model/api/response/course/SyllabusResponse"
+import { MentorResponse } from "@/data/model/api/response/mentor/MentorResponse"
+import { CompanyResponse } from "@/data/model/api/response/company/CompanyResponse"
 import { LoginResponse } from "@/data/model/api/response/user/LoginResponse"
 
 /**
@@ -67,6 +69,74 @@ export class ApiServiceImpl implements ApiService {
         "/v1/syllabus/public/list",
         {
           courseId,
+          page,
+          size,
+        },
+        {
+          headers: {
+            IgnoreAuth: "1",
+          },
+        },
+      ),
+    )
+    return {
+      content: res.data?.content ?? [],
+      totalElements: res.data?.totalElements ?? 0,
+      totalPages: res.data?.totalPages ?? 0,
+    }
+  }
+
+  async getPublicMentors(page = 0, size = 50): Promise<PageResponse<MentorResponse>> {
+    const res = await this.request<ResponseWrapper<PageResponse<MentorResponse>>>(() =>
+      this.api.apisauce.get<ResponseWrapper<PageResponse<MentorResponse>>>(
+        "/v1/mentor/public/list",
+        {
+          page,
+          size,
+        },
+        {
+          headers: {
+            IgnoreAuth: "1",
+          },
+        },
+      ),
+    )
+    return {
+      content: res.data?.content ?? [],
+      totalElements: res.data?.totalElements ?? 0,
+      totalPages: res.data?.totalPages ?? 0,
+    }
+  }
+
+  async getMentors(page = 0, size = 10): Promise<PageResponse<MentorResponse>> {
+    const res = await this.request<ResponseWrapper<PageResponse<MentorResponse>>>(() =>
+      this.api.apisauce.get<ResponseWrapper<PageResponse<MentorResponse>>>(
+        "/v1/mentor/list",
+        {
+          page,
+          size,
+        },
+      ),
+    )
+    return {
+      content: res.data?.content ?? [],
+      totalElements: res.data?.totalElements ?? 0,
+      totalPages: res.data?.totalPages ?? 0,
+    }
+  }
+
+  async getMentor(id: number): Promise<MentorResponse> {
+    const res = await this.request<ResponseWrapper<MentorResponse>>(() =>
+      this.api.apisauce.get<ResponseWrapper<MentorResponse>>(`/v1/mentor/get/${id}`),
+    )
+    return res.data
+  }
+
+  async getPublicCompanies(page = 0, size = 50): Promise<PageResponse<CompanyResponse>> {
+    const res = await this.request<ResponseWrapper<PageResponse<CompanyResponse>>>(() =>
+      this.api.apisauce.get<ResponseWrapper<PageResponse<CompanyResponse>>>(
+        "/v1/company/public/list",
+        {
           page,
           size,
         },
