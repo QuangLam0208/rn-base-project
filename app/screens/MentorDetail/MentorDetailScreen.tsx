@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
+import {
+  ActivityIndicator,
+  Image,
+  ImageStyle,
+  ScrollView,
+  TextStyle,
+  View,
+  ViewStyle,
+} from "react-native"
 import { useNavigation, useRoute, type RouteProp } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { observer } from "mobx-react-lite"
@@ -27,10 +35,6 @@ export const MentorDetailScreen = observer(function MentorDetailScreen() {
   const viewModel = useViewModel(MentorDetailViewModel)
   const [imageError, setImageError] = useState(false)
 
-  useEffect(() => {
-    viewModel.loadMentor(mentorId, initialMentor)
-  }, [viewModel, mentorId, initialMentor])
-
   const mentor = viewModel.mentor ?? initialMentor
   const account = mentor?.account
   const fullName = account?.fullName?.trim() || ""
@@ -41,13 +45,21 @@ export const MentorDetailScreen = observer(function MentorDetailScreen() {
   const phone = account?.phone?.trim() || ""
   const roleName = account?.group?.name?.trim() || ""
 
+  useEffect(() => {
+    viewModel.loadMentor(mentorId, initialMentor)
+  }, [viewModel, mentorId, initialMentor])
+
+  useEffect(() => {
+    setImageError(false)
+  }, [avatarUri])
+
   return (
     <Screen
-      preset="scroll"
+      preset="fixed"
       safeAreaEdges={["bottom"]}
       contentContainerStyle={themed($screenContainer)}
     >
-      {/* Header */}
+      {/* Fixed Header: Back button + Title always pinned at top */}
       <Header
         leftIcon="back"
         onLeftPress={() => navigation.goBack()}
@@ -69,8 +81,12 @@ export const MentorDetailScreen = observer(function MentorDetailScreen() {
           />
         </View>
       ) : mentor ? (
-        <View style={themed($content)}>
-          {/* Mentor Photo Container - Large Rounded Square (mockup match) */}
+        <ScrollView
+          style={themed($scrollView)}
+          contentContainerStyle={themed($content)}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Mentor Photo Container - Circular Avatar */}
           <View style={themed($avatarWrapper)}>
             {avatarUri && !imageError ? (
               <Image
@@ -80,13 +96,11 @@ export const MentorDetailScreen = observer(function MentorDetailScreen() {
                 onError={() => setImageError(true)}
               />
             ) : (
-              <View style={themed($avatarFallbackContainer)}>
-                <Image
-                  source={require("@assets/icons/profile.png")}
-                  style={themed($avatarFallback)}
-                  resizeMode="contain"
-                />
-              </View>
+              <Image
+                source={require("@assets/images/default_avatar.png")}
+                style={themed($avatar)}
+                resizeMode="cover"
+              />
             )}
           </View>
 
@@ -153,15 +167,19 @@ export const MentorDetailScreen = observer(function MentorDetailScreen() {
               <ActivityIndicator size="small" color={colors.tint} />
             </View>
           )}
-        </View>
+        </ScrollView>
       ) : null}
     </Screen>
   )
 })
 
 const $screenContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  flexGrow: 1,
+  flex: 1,
   backgroundColor: colors.background,
+})
+
+const $scrollView: ThemedStyle<ViewStyle> = () => ({
+  flex: 1,
 })
 
 const $loadingContainer: ThemedStyle<ViewStyle> = () => ({
@@ -198,12 +216,14 @@ const $content: ThemedStyle<ViewStyle> = () => ({
 })
 
 const $avatarWrapper: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  width: 200,
-  height: 200,
-  borderRadius: 24,
-  backgroundColor: colors.palette.neutral100,
+  width: 160,
+  height: 160,
+  borderRadius: 80,
+  backgroundColor: colors.palette.neutral200,
   overflow: "hidden",
   marginTop: 16,
+  alignItems: "center",
+  justifyContent: "center",
   shadowColor: colors.palette.neutral900,
   shadowOffset: { width: 0, height: 4 },
   shadowOpacity: 0.12,
@@ -214,20 +234,6 @@ const $avatarWrapper: ThemedStyle<ViewStyle> = ({ colors }) => ({
 const $avatar: ThemedStyle<ImageStyle> = () => ({
   width: "100%",
   height: "100%",
-})
-
-const $avatarFallbackContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  width: "100%",
-  height: "100%",
-  backgroundColor: colors.palette.neutral200,
-  alignItems: "center",
-  justifyContent: "center",
-})
-
-const $avatarFallback: ThemedStyle<ImageStyle> = ({ colors }) => ({
-  width: 80,
-  height: 80,
-  tintColor: colors.textDim,
 })
 
 const $profileInfo: ThemedStyle<ViewStyle> = () => ({

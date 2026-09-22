@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Image, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { observer } from "mobx-react-lite"
 
@@ -25,6 +25,10 @@ export const MentorCard = observer(function MentorCard({ mentor, onPress }: Ment
   const description = cleanDescription(mentor.description)
   const avatarUri = getAvatarUri(account?.avatarPath)
 
+  useEffect(() => {
+    setImageError(false)
+  }, [avatarUri])
+
   return (
     <TouchableOpacity
       style={themed($card)}
@@ -44,9 +48,9 @@ export const MentorCard = observer(function MentorCard({ mentor, onPress }: Ment
             />
           ) : (
             <Image
-              source={require("@assets/icons/profile.png")}
-              style={themed($avatarFallback)}
-              resizeMode="contain"
+              source={require("@assets/images/default_avatar.png")}
+              style={themed($avatar)}
+              resizeMode="cover"
             />
           )}
         </View>
@@ -100,12 +104,6 @@ const $avatarContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
 const $avatar: ThemedStyle<ImageStyle> = () => ({
   width: "100%",
   height: "100%",
-})
-
-const $avatarFallback: ThemedStyle<ImageStyle> = ({ colors }) => ({
-  width: 28,
-  height: 28,
-  tintColor: colors.textDim,
 })
 
 const $headerTextContainer: ThemedStyle<ViewStyle> = () => ({
