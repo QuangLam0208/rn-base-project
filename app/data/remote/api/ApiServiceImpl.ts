@@ -52,8 +52,8 @@ export class ApiServiceImpl implements ApiService {
   async getCourses(page = 0, size = 20): Promise<PageResponse<CourseResponse>> {
     const res = await this.request<ResponseWrapper<PageResponse<CourseResponse>>>(() =>
       this.api.apisauce.get<ResponseWrapper<PageResponse<CourseResponse>>>("/v1/course/list", {
-        "pageable.page": page,
-        "pageable.size": size,
+        page,
+        size,
       }),
     )
     return {

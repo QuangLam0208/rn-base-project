@@ -35,6 +35,13 @@ describe("container", () => {
     expect(repository1).toBe(repository2)
   })
 
+  it("resolves ViewModels in transient scope (creates a new instance on every resolution)", () => {
+    const homeVm1 = container.get(HomeViewModel)
+    const homeVm2 = container.get(HomeViewModel)
+
+    expect(homeVm1).not.toBe(homeVm2)
+  })
+
   it("resolves MasterApiService against a separate Api instance pointed at the second base URL", () => {
     const mainApi = container.get(Api)
     const masterApi = container.get<Api>(TYPES.MasterApi)
