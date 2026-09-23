@@ -33,6 +33,8 @@ import { AppNavigator } from "./navigators/AppNavigator"
 import { useNavigationPersistence } from "./navigators/navigationUtilities"
 import { ThemeProvider } from "./theme/context"
 import { customFontsToLoad } from "./theme/typography"
+import Toast from "react-native-toast-message"
+import { toastConfig } from "./components/Toast"
 import { initCrashReporting } from "./utils/crashReporting"
 import { loadDateFnsLocale } from "./utils/formatDate"
 
@@ -116,6 +118,7 @@ export function App() {
             initialState={initialNavigationState}
             onStateChange={onNavigationStateChange}
           />
+          <Toast config={toastConfig} />
         </ThemeProvider>
       </KeyboardProvider>
     </SafeAreaProvider>

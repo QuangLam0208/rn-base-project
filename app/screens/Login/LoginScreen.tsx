@@ -8,6 +8,7 @@ import { useViewModel } from "@/di/useViewModel"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
+import { showNormal, showWarning } from "@/utils/toast"
 
 import { LoginViewModel } from "./LoginViewModel"
 
@@ -27,11 +28,11 @@ export const LoginScreen = observer(function LoginScreen() {
   }
 
   const onQrClick = () => {
-    Alert.alert("QR Code", "Chức năng quét mã QR đăng nhập.")
+    showNormal("Chức năng quét mã QR đăng nhập đang phát triển.")
   }
 
   const onForgotPasswordClick = () => {
-    Alert.alert("Quên mật khẩu", "Vui lòng liên hệ quản trị viên để đặt lại mật khẩu.")
+    showWarning("Vui lòng liên hệ quản trị viên để đặt lại mật khẩu.")
   }
 
   return (
