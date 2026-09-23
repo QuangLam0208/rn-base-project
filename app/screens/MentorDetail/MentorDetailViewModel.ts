@@ -1,5 +1,5 @@
 import { injectable } from "inversify"
-import { actionBound, makeObservable, observable } from "mobx"
+import { actionBound, makeObservable, observable, runInAction } from "mobx"
 
 import { MentorResponse } from "@/data/model/api/response/mentor/MentorResponse"
 import { BaseViewModel } from "@/viewmodels/base/BaseViewModel"
@@ -34,11 +34,17 @@ export class MentorDetailViewModel extends BaseViewModel {
 
     try {
       const data = await this.repository.apiService.getMentor(id)
-      this.mentor = data
+      runInAction(() => {
+        this.mentor = data
+      })
     } catch (err) {
-      this.detailError = "error-load-mentor-detail"
+      runInAction(() => {
+        this.detailError = "error-load-mentor-detail"
+      })
     } finally {
-      this.isLoadingDetail = false
+      runInAction(() => {
+        this.isLoadingDetail = false
+      })
     }
   }
 }

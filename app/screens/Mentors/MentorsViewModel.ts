@@ -1,5 +1,5 @@
 import { injectable } from "inversify"
-import { actionBound, computed, makeObservable, observable } from "mobx"
+import { actionBound, computed, makeObservable, observable, runInAction } from "mobx"
 
 import { MentorResponse } from "@/data/model/api/response/mentor/MentorResponse"
 import { BaseViewModel } from "@/viewmodels/base/BaseViewModel"
@@ -49,15 +49,21 @@ export class MentorsViewModel extends BaseViewModel {
 
     try {
       const pageData = await this.repository.apiService.getMentors(0, this.pageSize)
-      this.mentors = pageData.content ?? []
-      this.page = 0
-      this.totalPages = pageData.totalPages ?? 1
-      this.totalElements = pageData.totalElements ?? 0
+      runInAction(() => {
+        this.mentors = pageData.content ?? []
+        this.page = 0
+        this.totalPages = pageData.totalPages ?? 1
+        this.totalElements = pageData.totalElements ?? 0
+      })
     } catch (err) {
-      this.error = "error-load-mentors"
+      runInAction(() => {
+        this.error = "error-load-mentors"
+      })
     } finally {
-      this.isInitialLoading = false
-      this.isRefreshing = false
+      runInAction(() => {
+        this.isInitialLoading = false
+        this.isRefreshing = false
+      })
     }
   }
 
@@ -76,14 +82,18 @@ export class MentorsViewModel extends BaseViewModel {
 
     try {
       const pageData = await this.repository.apiService.getMentors(nextPage, this.pageSize)
-      this.mentors = [...this.mentors, ...(pageData.content ?? [])]
-      this.page = nextPage
-      this.totalPages = pageData.totalPages ?? this.totalPages
-      this.totalElements = pageData.totalElements ?? this.totalElements
+      runInAction(() => {
+        this.mentors = [...this.mentors, ...(pageData.content ?? [])]
+        this.page = nextPage
+        this.totalPages = pageData.totalPages ?? this.totalPages
+        this.totalElements = pageData.totalElements ?? this.totalElements
+      })
     } catch (err) {
       // Keep existing items, but stop loading more indicator
     } finally {
-      this.isLoadingMore = false
+      runInAction(() => {
+        this.isLoadingMore = false
+      })
     }
   }
 

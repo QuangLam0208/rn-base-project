@@ -1,5 +1,5 @@
 import { injectable } from "inversify"
-import { actionBound, makeObservable, observable } from "mobx"
+import { actionBound, makeObservable, observable, runInAction } from "mobx"
 
 import { CourseResponse } from "@/data/model/api/response/course/CourseResponse"
 import { SyllabusResponse } from "@/data/model/api/response/course/SyllabusResponse"
@@ -44,12 +44,18 @@ export class CoursesViewModel extends BaseViewModel {
 
     try {
       const pageData = await this.repository.apiService.getCourses(0, 20)
-      this.courses = pageData.content ?? []
+      runInAction(() => {
+        this.courses = pageData.content ?? []
+      })
     } catch (err) {
-      this.error = "error-load-courses"
+      runInAction(() => {
+        this.error = "error-load-courses"
+      })
     } finally {
-      this.isInitialLoading = false
-      this.isRefreshing = false
+      runInAction(() => {
+        this.isInitialLoading = false
+        this.isRefreshing = false
+      })
     }
   }
 
@@ -71,20 +77,26 @@ export class CoursesViewModel extends BaseViewModel {
       }
       try {
         const pageData = await this.repository.apiService.getSyllabuses(courseId, 0, 20)
-        this.syllabusMap = {
-          ...this.syllabusMap,
-          [courseId]: pageData.content ?? [],
-        }
+        runInAction(() => {
+          this.syllabusMap = {
+            ...this.syllabusMap,
+            [courseId]: pageData.content ?? [],
+          }
+        })
       } catch (err) {
-        this.syllabusMap = {
-          ...this.syllabusMap,
-          [courseId]: [],
-        }
+        runInAction(() => {
+          this.syllabusMap = {
+            ...this.syllabusMap,
+            [courseId]: [],
+          }
+        })
       } finally {
-        this.syllabusLoadingMap = {
-          ...this.syllabusLoadingMap,
-          [courseId]: false,
-        }
+        runInAction(() => {
+          this.syllabusLoadingMap = {
+            ...this.syllabusLoadingMap,
+            [courseId]: false,
+          }
+        })
       }
     }
   }
