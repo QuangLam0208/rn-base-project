@@ -1,5 +1,5 @@
 import { ApiResponse } from "apisauce"
-import { inject, injectable } from "inversify"
+import { injectable } from "inversify"
 
 import { getGeneralApiProblem } from "./apiProblem"
 import { ApiService } from "./ApiService"
@@ -22,7 +22,7 @@ import { LoginResponse } from "@/data/model/api/response/user/LoginResponse"
  */
 @injectable()
 export class ApiServiceImpl implements ApiService {
-  constructor(@inject(Api) private api: Api = new Api()) {}
+  constructor(private api: Api) {}
 
   protected async request<T>(fn: () => Promise<ApiResponse<T>>): Promise<T> {
     const response = await fn()

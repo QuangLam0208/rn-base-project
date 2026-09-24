@@ -11,7 +11,8 @@ import { Switch } from "@/components/Toggle/Switch"
 import { changeLanguage, getCurrentLanguage, SupportedLanguageTag, TxKeyPath } from "@/i18n"
 import { translate } from "@/i18n/translate"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
-import { authStore } from "@/stores/authStore"
+import { container } from "@/di/container"
+import { AuthStore } from "@/stores/authStore"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 import { checkForUpdate, downloadAndApplyUpdate } from "@/utils/appUpdates"
@@ -42,7 +43,7 @@ export function SettingsScreen() {
           text: translate("settingsScreen:logout"),
           style: "destructive",
           onPress: () => {
-            authStore.clearToken()
+            container.get(AuthStore).clearToken()
             navigation.reset({
               index: 0,
               routes: [{ name: "Login" }],

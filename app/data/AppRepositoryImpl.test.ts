@@ -14,20 +14,23 @@ jest.mock("expo-sqlite", () => ({
 }))
 
 describe("AppRepositoryImpl", () => {
+  const createRepo = () =>
+    new AppRepositoryImpl(new ApiServiceImpl({} as any), new StorageService())
+
   it("exposes the injected ApiService as .apiService without touching expo-sqlite", () => {
-    const repo = new AppRepositoryImpl()
+    const repo = createRepo()
 
     expect(repo.apiService).toBeInstanceOf(ApiServiceImpl)
     expect(openDatabaseSync).not.toHaveBeenCalled()
   })
 
   it("exposes the injected StorageService as .storageService", () => {
-    const repo = new AppRepositoryImpl()
+    const repo = createRepo()
     expect(repo.storageService).toBeInstanceOf(StorageService)
   })
 
   it("only opens the local database the first time .roomService is read", () => {
-    const repo = new AppRepositoryImpl()
+    const repo = createRepo()
     expect(openDatabaseSync).not.toHaveBeenCalled()
 
     const first = repo.roomService

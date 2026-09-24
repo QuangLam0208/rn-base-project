@@ -7,7 +7,8 @@ import { Text } from "@/components/Text"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
-import { authStore } from "@/stores/authStore"
+import { container } from "@/di/container"
+import { AuthStore } from "@/stores/authStore"
 
 // Mirrors ai-project-android's SplashActivity.SPLASH_DELAY_MS — a brief,
 // deliberate pause so the splash branding is actually visible, not just
@@ -26,7 +27,7 @@ export function SplashScreen() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const initialRoute = authStore.isAuthenticated ? "MainTabs" : "Login"
+      const initialRoute = container.get(AuthStore).isAuthenticated ? "MainTabs" : "Login"
       navigation.reset({
         index: 0,
         routes: [{ name: initialRoute }],

@@ -5,6 +5,8 @@ import { MasterApiService } from "@/data/remote/api/master/MasterApiService"
 import { MasterApiServiceImpl } from "@/data/remote/api/master/MasterApiServiceImpl"
 import { Repository } from "@/data/Repository"
 import { HomeViewModel } from "@/screens/Home/HomeViewModel"
+import { LoginViewModel } from "@/screens/Login/LoginViewModel"
+import { AuthStore } from "@/stores/authStore"
 
 import { container } from "./container"
 import { TYPES } from "./types"
@@ -54,4 +56,26 @@ describe("container", () => {
     const masterApiService = container.get<MasterApiService>(TYPES.MasterApiService)
     expect(masterApiService).toBeInstanceOf(MasterApiServiceImpl)
   })
+
+  it("resolves AuthStore as a singleton", () => {
+    const auth1 = container.get(AuthStore)
+    const auth2 = container.get(AuthStore)
+    expect(auth1).toBe(auth2)
+  })
+
+  it("property-injects the shared AuthStore singleton into LoginViewModel", () => {
+    const loginVm = container.get(LoginViewModel)
+    const authStore = (loginVm as unknown as { authStore: AuthStore }).authStore
+    expect(authStore).toBe(container.get(AuthStore))
+  })
+
+  it("shares the same AuthStore singleton between LoginViewModel and Api in Repository", () => {
+    const authStore = container.get(AuthStore)
+    const repo = container.get<Repository>(TYPES.Repository)
+    const apiService = repo.apiService as ApiServiceImpl
+    const api = (apiService as unknown as { api: Api }).api
+
+    expect((api as unknown as { authStore: AuthStore }).authStore).toBe(authStore)
+  })
 })
+
