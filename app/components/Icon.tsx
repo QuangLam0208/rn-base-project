@@ -136,6 +136,14 @@ export const iconRegistry = {
   qrCode: require("@assets/icons/ic_qr_code.png"),
   visibility: require("@assets/icons/ic_visibility.png"),
   visibilityOff: require("@assets/icons/ic_visibility_off.png"),
+  courses: require("@assets/icons/ic_courses.png"),
+  arrowDropDown: require("@assets/icons/ic_arrow_drop_down.png"),
+  plus: require("@assets/icons/ic_plus.png"),
+  minus: require("@assets/icons/ic_minus.png"),
+  logout: require("@assets/icons/ic_logout.png"),
+  mentor: require("@assets/icons/ic_mentor.png"),
+  company: require("@assets/icons/ic_company.png"),
+  quote: require("@assets/icons/ic_quote.png"),
 }
 
 const $imageStyleBase: ImageStyle = {

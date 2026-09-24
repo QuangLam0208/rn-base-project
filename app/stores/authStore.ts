@@ -1,4 +1,4 @@
-import { injectable } from "inversify"
+import { inject, injectable } from "inversify"
 import { makeAutoObservable } from "mobx"
 
 import { StorageService } from "@/data/local/storage/StorageService"
@@ -11,7 +11,7 @@ export class AuthStore {
   token: string | null = null
   username: string | null = null
 
-  constructor(private storageService: StorageService = new StorageService()) {
+  constructor(private storageService: StorageService) {
     makeAutoObservable(this)
     this.token = this.storageService.load<string>(AUTH_TOKEN_KEY)
     this.username = this.storageService.load<string>(AUTH_USERNAME_KEY)
@@ -38,4 +38,3 @@ export class AuthStore {
   }
 }
 
-export const authStore = new AuthStore()

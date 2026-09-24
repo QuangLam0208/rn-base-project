@@ -6,10 +6,10 @@
  * documentation for more details.
  */
 import { ApisauceInstance, create } from "apisauce"
-import { inject, injectable, unmanaged } from "inversify"
+import { injectable } from "inversify"
 
 import Config from "@/config"
-import { authStore as defaultAuthStore, AuthStore } from "@/stores/authStore"
+import { AuthStore } from "@/stores/authStore"
 
 import { logApiCall } from "./apiLogger"
 import type { ApiConfig } from "./types"
@@ -52,8 +52,8 @@ export class Api {
    * Set up our API instance. Keep this lightweight!
    */
   constructor(
-    @inject(AuthStore) private authStore: AuthStore = defaultAuthStore,
-    @unmanaged() config: ApiConfig = DEFAULT_API_CONFIG,
+    private authStore: AuthStore,
+    config: ApiConfig = DEFAULT_API_CONFIG,
   ) {
     this.config = config
     this.apisauce = create({
@@ -69,13 +69,18 @@ export class Api {
       request.headers = request.headers ?? {}
       request.headers["X-tenant"] = AUTH_CONFIG.TENANT
 
-      if (request.headers.IgnoreAuth === "1") {
+      const ignoreAuth = request.headers.IgnoreAuth === "1" || request.headers.ignoreauth === "1"
+      if (ignoreAuth) {
         delete request.headers.IgnoreAuth
+        delete request.headers.ignoreauth
         return
       }
 
-      if (request.headers.UseBasicAuth === "1") {
+      const useBasicAuth =
+        request.headers.UseBasicAuth === "1" || request.headers.usebasicauth === "1"
+      if (useBasicAuth) {
         delete request.headers.UseBasicAuth
+        delete request.headers.usebasicauth
         request.headers.Authorization = getBasicAuthHeader()
         return
       }

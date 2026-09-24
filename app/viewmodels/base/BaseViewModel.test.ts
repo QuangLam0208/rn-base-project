@@ -51,4 +51,11 @@ describe("BaseViewModel", () => {
     expect(vm.error).toBeNull()
     expect(vm.value).toBe("second")
   })
+
+  it("delegates toast methods to toast utility", () => {
+    const vm = new TestViewModel()
+    const toastSpy = jest.spyOn(require("@/utils/toast"), "showSuccess")
+    vm.showSuccessMessage("Hello")
+    expect(toastSpy).toHaveBeenCalledWith("Hello", undefined)
+  })
 })

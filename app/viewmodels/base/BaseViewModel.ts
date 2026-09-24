@@ -3,6 +3,7 @@ import { runInAction } from "mobx"
 
 import { Repository } from "@/data/Repository"
 import { TYPES } from "@/di/types"
+import { showError, showNormal, showSuccess, showWarning, ToastOptions } from "@/utils/toast"
 
 /**
  * Every ViewModel calls the API (and, eventually, local storage), so
@@ -57,5 +58,21 @@ export abstract class BaseViewModel {
         this.isLoading = false
       })
     }
+  }
+
+  showSuccessMessage(message: string, options?: ToastOptions): void {
+    showSuccess(message, options)
+  }
+
+  showErrorMessage(message: string, options?: ToastOptions): void {
+    showError(message, options)
+  }
+
+  showWarningMessage(message: string, options?: ToastOptions): void {
+    showWarning(message, options)
+  }
+
+  showNormalMessage(message: string, options?: ToastOptions): void {
+    showNormal(message, options)
   }
 }

@@ -2,19 +2,23 @@
  * The app navigator (formerly "AppNavigator" and "MainNavigator") is used for the primary
  * navigation flows of your app.
  *
- * `Splash` is the initial route and resets straight to `MainTabs` after
- * a brief delay — there is no auth gate in this base project (see
- * CLAUDE.md).
+ * `Splash` is the initial route. SplashScreen.tsx hides the native splash on mount
+ * (both have identical visuals → seamless transition), then resets to MainTabs/Login
+ * after a brief delay.
  */
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
 import Config from "@/config"
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
+import { MentorDetailScreen } from "@/screens/MentorDetail/MentorDetailScreen"
 import { SettingsScreen } from "@/screens/Settings/SettingsScreen"
 import { SplashScreen } from "@/screens/Splash/SplashScreen"
 import { LoginScreen } from "@/screens/Login/LoginScreen"
+import { TodoListScreen } from "@/screens/TodoList/TodoListScreen"
 import { useAppTheme } from "@/theme/context"
+import { container } from "@/di/container"
+import { AuthStore } from "@/stores/authStore"
 
 import { MainTabNavigator } from "./MainTabNavigator"
 import type { AppStackParamList, NavigationProps } from "./navigationTypes"
@@ -34,6 +38,8 @@ const AppStack = function AppStack() {
     theme: { colors },
   } = useAppTheme()
 
+  const initialRoute = container.get(AuthStore).isAuthenticated ? "MainTabs" : "Login"
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -42,12 +48,14 @@ const AppStack = function AppStack() {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName="Splash"
+      initialRouteName={initialRoute}
     >
-      <Stack.Screen name="Splash" component={SplashScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="MainTabs" component={MainTabNavigator} />
+      <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="MentorDetail" component={MentorDetailScreen} />
+      <Stack.Screen name="TodoList" component={TodoListScreen} />
+      <Stack.Screen name="Splash" component={SplashScreen} />
       {/** 🔥 Your screens go here */}
       {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>

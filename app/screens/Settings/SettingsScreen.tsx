@@ -1,15 +1,18 @@
 import { useState } from "react"
-import { TextStyle, View, ViewStyle } from "react-native"
+import { Alert, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 
 import { Button } from "@/components/Button"
-import { PressableIcon } from "@/components/Icon"
+import { Icon, PressableIcon } from "@/components/Icon"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { Radio } from "@/components/Toggle/Radio"
 import { Switch } from "@/components/Toggle/Switch"
 import { changeLanguage, getCurrentLanguage, SupportedLanguageTag, TxKeyPath } from "@/i18n"
+import { translate } from "@/i18n/translate"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
+import { container } from "@/di/container"
+import { AuthStore } from "@/stores/authStore"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 import { checkForUpdate, downloadAndApplyUpdate } from "@/utils/appUpdates"
@@ -27,8 +30,29 @@ const updateStatusTx: Partial<Record<UpdateStatus, TxKeyPath>> = {
 }
 
 export function SettingsScreen() {
-  const { themed, themeContext, setThemeContextOverride } = useAppTheme()
+  const { themed, theme, themeContext, setThemeContextOverride } = useAppTheme()
   const navigation = useNavigation<AppStackScreenProps<"Settings">["navigation"]>()
+
+  const handleLogout = () => {
+    Alert.alert(
+      translate("settingsScreen:logoutConfirmTitle"),
+      translate("settingsScreen:logoutConfirmMessage"),
+      [
+        { text: translate("common:cancel"), style: "cancel" },
+        {
+          text: translate("settingsScreen:logout"),
+          style: "destructive",
+          onPress: () => {
+            container.get(AuthStore).clearToken()
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            })
+          },
+        },
+      ],
+    )
+  }
 
   // Local state so the radio selection reacts immediately — changeLanguage()
   // itself doesn't trigger a re-render here (see app/i18n/index.ts).
@@ -59,7 +83,7 @@ export function SettingsScreen() {
   }
 
   return (
-    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($container)}>
+    <Screen preset="fixed" safeAreaEdges={["top", "bottom"]} contentContainerStyle={themed($container)}>
       <View style={themed($header)}>
         <PressableIcon icon="back" size={28} onPress={() => navigation.goBack()} />
         <Text tx="settingsScreen:title" preset="heading" style={themed($headerTitle)} />
@@ -111,6 +135,17 @@ export function SettingsScreen() {
           />
         )}
       </View>
+
+      <View style={themed($footer)}>
+        <TouchableOpacity
+          style={themed($logoutButton)}
+          onPress={handleLogout}
+          activeOpacity={0.8}
+        >
+          <Icon icon="logout" size={20} color={theme.colors.dangerText} style={themed($logoutIcon)} />
+          <Text tx="settingsScreen:logout" style={themed($logoutText)} />
+        </TouchableOpacity>
+      </View>
     </Screen>
   )
 }
@@ -154,4 +189,30 @@ const $row: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 const $updateStatusText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   color: colors.textDim,
   marginBottom: spacing.sm,
+})
+
+const $footer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  marginTop: "auto",
+  paddingHorizontal: spacing.md,
+  paddingBottom: spacing.lg,
+})
+
+const $logoutButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: colors.danger,
+  borderRadius: 10,
+  height: 52,
+})
+
+const $logoutIcon: ThemedStyle<ImageStyle> = () => ({
+  marginRight: 8,
+})
+
+const $logoutText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
+  fontFamily: typography.primary.semiBold,
+  fontSize: fontSizes.title,
+  fontWeight: "600",
+  color: colors.dangerText,
 })

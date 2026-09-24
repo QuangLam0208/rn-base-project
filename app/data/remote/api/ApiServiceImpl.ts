@@ -1,11 +1,17 @@
 import { ApiResponse } from "apisauce"
-import { inject, injectable } from "inversify"
+import { injectable } from "inversify"
 
 import { getGeneralApiProblem } from "./apiProblem"
 import { ApiService } from "./ApiService"
 
 import { Api } from "./index"
+import { PageResponse } from "@/data/model/api/PageResponse"
+import { ResponseWrapper } from "@/data/model/api/ResponseWrapper"
 import { LoginRequest } from "@/data/model/api/request/user/LoginRequest"
+import { CourseResponse } from "@/data/model/api/response/course/CourseResponse"
+import { SyllabusResponse } from "@/data/model/api/response/course/SyllabusResponse"
+import { MentorResponse } from "@/data/model/api/response/mentor/MentorResponse"
+import { CompanyResponse } from "@/data/model/api/response/company/CompanyResponse"
 import { LoginResponse } from "@/data/model/api/response/user/LoginResponse"
 
 /**
@@ -13,24 +19,10 @@ import { LoginResponse } from "@/data/model/api/response/user/LoginResponse"
  * mapping. ApiService.ts stays a pure interface (mirroring
  * ai-project-android's ApiService.java); this is where the actual
  * apisauce calls and DTO-to-domain-model mapping live.
- *
- * Empty in this base project (ApiService.ts declares no endpoints yet)
- * — `request()` below is the reusable "unwrap an apisauce response or
- * throw" helper every endpoint method should go through. A worked
- * example of adding a real endpoint:
- *
- * ```ts
- * async getSomething(): Promise<SomethingItem[]> {
- *   const data = await this.request(() =>
- *     this.api.apisauce.get<SomethingResponse[]>("/v1/something"),
- *   )
- *   return data.map((item) => ({ id: String(item.id), name: item.name }))
- * }
- * ```
  */
 @injectable()
 export class ApiServiceImpl implements ApiService {
-  constructor(@inject(Api) private api: Api = new Api()) {}
+  constructor(private api: Api) {}
 
   protected async request<T>(fn: () => Promise<ApiResponse<T>>): Promise<T> {
     const response = await fn()
@@ -55,5 +47,110 @@ export class ApiServiceImpl implements ApiService {
         },
       }),
     )
+  }
+
+  async getCourses(page = 0, size = 20): Promise<PageResponse<CourseResponse>> {
+    const res = await this.request<ResponseWrapper<PageResponse<CourseResponse>>>(() =>
+      this.api.apisauce.get<ResponseWrapper<PageResponse<CourseResponse>>>("/v1/course/list", {
+        page,
+        size,
+      }),
+    )
+    return {
+      content: res.data?.content ?? [],
+      totalElements: res.data?.totalElements ?? 0,
+      totalPages: res.data?.totalPages ?? 0,
+    }
+  }
+
+  async getSyllabuses(courseId: number, page = 0, size = 20): Promise<PageResponse<SyllabusResponse>> {
+    const res = await this.request<ResponseWrapper<PageResponse<SyllabusResponse>>>(() =>
+      this.api.apisauce.get<ResponseWrapper<PageResponse<SyllabusResponse>>>(
+        "/v1/syllabus/public/list",
+        {
+          courseId,
+          page,
+          size,
+        },
+        {
+          headers: {
+            IgnoreAuth: "1",
+          },
+        },
+      ),
+    )
+    return {
+      content: res.data?.content ?? [],
+      totalElements: res.data?.totalElements ?? 0,
+      totalPages: res.data?.totalPages ?? 0,
+    }
+  }
+
+  async getPublicMentors(page = 0, size = 50): Promise<PageResponse<MentorResponse>> {
+    const res = await this.request<ResponseWrapper<PageResponse<MentorResponse>>>(() =>
+      this.api.apisauce.get<ResponseWrapper<PageResponse<MentorResponse>>>(
+        "/v1/mentor/public/list",
+        {
+          page,
+          size,
+        },
+        {
+          headers: {
+            IgnoreAuth: "1",
+          },
+        },
+      ),
+    )
+    return {
+      content: res.data?.content ?? [],
+      totalElements: res.data?.totalElements ?? 0,
+      totalPages: res.data?.totalPages ?? 0,
+    }
+  }
+
+  async getMentors(page = 0, size = 10): Promise<PageResponse<MentorResponse>> {
+    const res = await this.request<ResponseWrapper<PageResponse<MentorResponse>>>(() =>
+      this.api.apisauce.get<ResponseWrapper<PageResponse<MentorResponse>>>(
+        "/v1/mentor/list",
+        {
+          page,
+          size,
+        },
+      ),
+    )
+    return {
+      content: res.data?.content ?? [],
+      totalElements: res.data?.totalElements ?? 0,
+      totalPages: res.data?.totalPages ?? 0,
+    }
+  }
+
+  async getMentor(id: number): Promise<MentorResponse> {
+    const res = await this.request<ResponseWrapper<MentorResponse>>(() =>
+      this.api.apisauce.get<ResponseWrapper<MentorResponse>>(`/v1/mentor/get/${id}`),
+    )
+    return res.data
+  }
+
+  async getPublicCompanies(page = 0, size = 50): Promise<PageResponse<CompanyResponse>> {
+    const res = await this.request<ResponseWrapper<PageResponse<CompanyResponse>>>(() =>
+      this.api.apisauce.get<ResponseWrapper<PageResponse<CompanyResponse>>>(
+        "/v1/company/public/list",
+        {
+          page,
+          size,
+        },
+        {
+          headers: {
+            IgnoreAuth: "1",
+          },
+        },
+      ),
+    )
+    return {
+      content: res.data?.content ?? [],
+      totalElements: res.data?.totalElements ?? 0,
+      totalPages: res.data?.totalPages ?? 0,
+    }
   }
 }

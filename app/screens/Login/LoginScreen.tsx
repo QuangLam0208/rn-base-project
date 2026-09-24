@@ -8,11 +8,12 @@ import { useViewModel } from "@/di/useViewModel"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
+import { showNormal, showWarning } from "@/utils/toast"
 
 import { LoginViewModel } from "./LoginViewModel"
 
 export const LoginScreen = observer(function LoginScreen() {
-  const { themed } = useAppTheme()
+  const { themed, theme } = useAppTheme()
   const viewModel = useViewModel(LoginViewModel)
   const navigation = useNavigation<AppStackScreenProps<"Login">["navigation"]>()
 
@@ -27,17 +28,17 @@ export const LoginScreen = observer(function LoginScreen() {
   }
 
   const onQrClick = () => {
-    Alert.alert("QR Code", "Chức năng quét mã QR đăng nhập.")
+    showNormal("Chức năng quét mã QR đăng nhập đang phát triển.")
   }
 
   const onForgotPasswordClick = () => {
-    Alert.alert("Quên mật khẩu", "Vui lòng liên hệ quản trị viên để đặt lại mật khẩu.")
+    showWarning("Vui lòng liên hệ quản trị viên để đặt lại mật khẩu.")
   }
 
   return (
     <Screen
       preset="auto"
-      backgroundColor="#1B1C1F"
+      backgroundColor={theme.colors.background}
       safeAreaEdges={["bottom"]}
       contentContainerStyle={themed($screenContent)}
     >
@@ -67,7 +68,7 @@ export const LoginScreen = observer(function LoginScreen() {
             value={viewModel.username}
             onChangeText={viewModel.setUsername}
             placeholder="Username"
-            placeholderTextColor="#757A82"
+            placeholderTextColor={theme.colors.placeholder}
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="next"
@@ -80,7 +81,7 @@ export const LoginScreen = observer(function LoginScreen() {
               value={viewModel.password}
               onChangeText={viewModel.setPassword}
               placeholder="Password"
-              placeholderTextColor="#757A82"
+              placeholderTextColor={theme.colors.placeholder}
               secureTextEntry={!viewModel.isPasswordVisible}
               autoCapitalize="none"
               autoCorrect={false}
@@ -137,7 +138,7 @@ export const LoginScreen = observer(function LoginScreen() {
           activeOpacity={0.8}
         >
           {viewModel.isLoading ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={theme.colors.buttonPrimaryText} />
           ) : (
             <Text tx="loginScreen:loginButton" style={themed($loginButtonText)} />
           )}
@@ -155,20 +156,20 @@ export const LoginScreen = observer(function LoginScreen() {
   )
 })
 
-const $screenContent: ThemedStyle<ViewStyle> = () => ({
+const $screenContent: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flexGrow: 1,
   justifyContent: "space-between",
-  backgroundColor: "#1B1C1F",
+  backgroundColor: colors.background,
 })
 
 const $topSection: ThemedStyle<ViewStyle> = () => ({
   width: "100%",
 })
 
-const $headerContainer: ThemedStyle<ViewStyle> = () => ({
+const $headerContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   width: "100%",
   height: 220,
-  backgroundColor: "#1B1C1F",
+  backgroundColor: colors.background,
   position: "relative",
 })
 
@@ -192,10 +193,11 @@ const $logo: ThemedStyle<ImageStyle> = () => ({
   height: 50,
 })
 
-const $brandName: ThemedStyle<TextStyle> = ({ typography }) => ({
-  fontFamily: typography.primary.semiBold,
-  fontSize: 22,
-  color: "#FFFFFF",
+const $brandName: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
+  fontFamily: typography.spaceGrotesk.semiBold,
+  fontSize: fontSizes.display,
+  lineHeight: 24,
+  color: colors.white,
   marginTop: 13,
   letterSpacing: 0.96,
 })
@@ -204,21 +206,21 @@ const $formContainer: ThemedStyle<ViewStyle> = () => ({
   width: "100%",
 })
 
-const $labelUsername: ThemedStyle<TextStyle> = ({ typography }) => ({
+const $labelUsername: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.medium,
-  fontSize: 17,
-  color: "#FFFFFF",
+  fontSize: fontSizes.md,
+  color: colors.text,
   marginLeft: 21,
   marginTop: 36,
 })
 
-const $input: ThemedStyle<TextStyle> = ({ typography }) => ({
+const $input: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.normal,
-  fontSize: 17,
-  color: "#FFFFFF",
-  backgroundColor: "#27292D",
+  fontSize: fontSizes.content,
+  color: colors.text,
+  backgroundColor: colors.inputBackground,
   borderWidth: 1,
-  borderColor: "#3A3C42",
+  borderColor: colors.inputBorder,
   borderRadius: 13,
   height: 50,
   marginHorizontal: 21,
@@ -226,33 +228,33 @@ const $input: ThemedStyle<TextStyle> = ({ typography }) => ({
   paddingHorizontal: 18,
 })
 
-const $labelPassword: ThemedStyle<TextStyle> = ({ typography }) => ({
+const $labelPassword: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.medium,
-  fontSize: 17,
-  color: "#FFFFFF",
-  marginLeft: 21, 
-  marginTop: 21, 
+  fontSize: fontSizes.md,
+  color: colors.text,
+  marginLeft: 21,
+  marginTop: 21,
 })
 
-const $passwordInputContainer: ThemedStyle<ViewStyle> = () => ({
+const $passwordInputContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   height: 50,
-  marginHorizontal: 21, 
-  marginTop: 10, 
-  backgroundColor: "#27292D",
+  marginHorizontal: 21,
+  marginTop: 10,
+  backgroundColor: colors.inputBackground,
   borderWidth: 1,
-  borderColor: "#3A3C42",
-  borderRadius: 13, 
+  borderColor: colors.inputBorder,
+  borderRadius: 13,
   flexDirection: "row",
   alignItems: "center",
   position: "relative",
 })
 
-const $passwordInput: ThemedStyle<TextStyle> = ({ typography }) => ({
+const $passwordInput: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   flex: 1,
   height: "100%",
   fontFamily: typography.primary.normal,
-  fontSize: 17,
-  color: "#FFFFFF",
+  fontSize: fontSizes.content,
+  color: colors.text,
   paddingLeft: 18,
   paddingRight: 45,
 })
@@ -260,24 +262,24 @@ const $passwordInput: ThemedStyle<TextStyle> = ({ typography }) => ({
 const $togglePasswordButton: ThemedStyle<ViewStyle> = () => ({
   position: "absolute",
   right: 15,
-  width: 31, 
-  height: 31, 
+  width: 31,
+  height: 31,
   justifyContent: "center",
   alignItems: "center",
 })
 
-const $eyeIcon: ThemedStyle<ImageStyle> = () => ({
+const $eyeIcon: ThemedStyle<ImageStyle> = ({ colors }) => ({
   width: 24,
   height: 24,
-  tintColor: "#A6ABB4",
+  tintColor: colors.placeholder,
 })
 
 const $qrRow: ThemedStyle<ViewStyle> = () => ({
   flexDirection: "row",
   alignItems: "center",
   marginLeft: 21,
-  marginTop: 21, 
-  marginBottom: 21, 
+  marginTop: 21,
+  marginBottom: 21,
   alignSelf: "flex-start",
 })
 
@@ -286,16 +288,16 @@ const $qrIcon: ThemedStyle<ImageStyle> = () => ({
   height: 28,
 })
 
-const $qrText: ThemedStyle<TextStyle> = ({ typography }) => ({
+const $qrText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.medium,
-  fontSize: 17, 
-  color: "#FFFFFF", 
-  marginLeft: 13, 
+  fontSize: fontSizes.content,
+  color: colors.text,
+  marginLeft: 13,
 })
 
-const $errorText: ThemedStyle<TextStyle> = () => ({
-  color: "#E53935",
-  fontSize: 15,
+const $errorText: ThemedStyle<TextStyle> = ({ colors, fontSizes }) => ({
+  color: colors.danger,
+  fontSize: fontSizes.sm,
   textAlign: "center",
   marginHorizontal: 16,
   marginBottom: 8,
@@ -309,11 +311,11 @@ const $bottomContainer: ThemedStyle<ViewStyle> = () => ({
   paddingBottom: 31,
 })
 
-const $loginButton: ThemedStyle<ViewStyle> = () => ({
+const $loginButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
   height: 50,
   marginHorizontal: 21,
-  backgroundColor: "#232D93",
-  borderRadius: 8, 
+  backgroundColor: colors.buttonPrimary,
+  borderRadius: 8,
   justifyContent: "center",
   alignItems: "center",
 })
@@ -322,10 +324,10 @@ const $loginButtonDisabled: ThemedStyle<ViewStyle> = () => ({
   opacity: 0.7,
 })
 
-const $loginButtonText: ThemedStyle<TextStyle> = ({ typography }) => ({
+const $loginButtonText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.medium,
-  fontSize: 17,
-  color: "#FFFFFF",
+  fontSize: fontSizes.title,
+  color: colors.buttonPrimaryText,
 })
 
 const $forgotPasswordButton: ThemedStyle<ViewStyle> = () => ({
@@ -335,8 +337,8 @@ const $forgotPasswordButton: ThemedStyle<ViewStyle> = () => ({
   padding: 5,
 })
 
-const $forgotPasswordText: ThemedStyle<TextStyle> = ({ typography }) => ({
+const $forgotPasswordText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.medium,
-  fontSize: 17,
-  color: "#4AA3BA",
+  fontSize: fontSizes.content,
+  color: colors.link,
 })

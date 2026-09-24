@@ -1,10 +1,13 @@
-import { authStore } from "@/stores/authStore";
-import { BaseViewModel } from "@/viewmodels/base/BaseViewModel";
-import { injectable } from "inversify";
-import { actionBound, makeObservable, observable } from "mobx";
+import { AuthStore } from "@/stores/authStore"
+import { BaseViewModel } from "@/viewmodels/base/BaseViewModel"
+import { inject, injectable } from "inversify"
+import { actionBound, makeObservable, observable } from "mobx"
 
 @injectable()
 export class LoginViewModel extends BaseViewModel {
+  @inject(AuthStore)
+  private authStore!: AuthStore
+
   username = ""
   password = ""
   isPasswordVisible = false
@@ -43,6 +46,7 @@ export class LoginViewModel extends BaseViewModel {
 
     if (!trimmedUsername || !rawPassword) {
       this.error = "empty-fields"
+      this.showErrorMessage("Vui lòng nhập đầy đủ tài khoản và mật khẩu")
       return false
     }
 
@@ -56,12 +60,17 @@ export class LoginViewModel extends BaseViewModel {
       })
 
       if (response && response.access_token) {
-        authStore.setToken(response.access_token, response.username ?? trimmedUsername)
+        this.authStore.setToken(response.access_token, response.username ?? trimmedUsername)
+        this.showSuccessMessage("Đăng nhập thành công!")
         isSuccess = true
       } else {
         throw new Error("invalid-response")
       }
     })
+
+    if (!isSuccess && this.error && this.error !== "empty-fields") {
+      this.showErrorMessage("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.")
+    }
 
     return isSuccess
   }

@@ -12,7 +12,7 @@ import { ApiServiceImpl } from "@/data/remote/api/ApiServiceImpl"
 import { MasterApiService } from "@/data/remote/api/master/MasterApiService"
 import { MasterApiServiceImpl } from "@/data/remote/api/master/MasterApiServiceImpl"
 import { Repository } from "@/data/Repository"
-import { authStore, AuthStore } from "@/stores/authStore"
+import { AuthStore } from "@/stores/authStore"
 
 import { TYPES } from "../types"
 
@@ -23,29 +23,51 @@ import { TYPES } from "../types"
  */
 export const dataModule = new ContainerModule((bind) => {
   bind(StorageService).toSelf().inSingletonScope()
-  // Reuse the module-level authStore instance (not a fresh toSelf()) so
-  // every consumer — DI-resolved or directly imported — shares one token.
-  bind(AuthStore).toConstantValue(authStore)
-  bind(Api).toSelf().inSingletonScope()
-  bind<ApiService>(TYPES.ApiService).to(ApiServiceImpl).inSingletonScope()
+  bind(AuthStore)
+    .toDynamicValue((context) => new AuthStore(context.container.get(StorageService)))
+    .inSingletonScope()
+  bind(Api)
+    .toDynamicValue((context) => new Api(context.container.get(AuthStore)))
+    .inSingletonScope()
+  bind<ApiService>(TYPES.ApiService)
+    .toDynamicValue((context) => new ApiServiceImpl(context.container.get(Api)))
+    .inSingletonScope()
 
   // Second base URL demo (see CLAUDE.md's DI section) — a different Api
   // instance, same Api class, so it can't share Api's own toSelf()
   // binding above. Bound behind its own Symbol token instead, the way a
   // second @Named/qualifier Retrofit provider would work in Dagger.
   bind<Api>(TYPES.MasterApi)
-    .toDynamicValue(() => new Api(authStore, { url: Config.MASTER_API_URL, timeout: 10000 }))
+    .toDynamicValue(
+      (context) =>
+        new Api(context.container.get(AuthStore), { url: Config.MASTER_API_URL, timeout: 10000 }),
+    )
     .inSingletonScope()
-  bind<MasterApiService>(TYPES.MasterApiService).to(MasterApiServiceImpl).inSingletonScope()
+  bind<MasterApiService>(TYPES.MasterApiService)
+    .toDynamicValue(
+      (context) => new MasterApiServiceImpl(context.container.get<Api>(TYPES.MasterApi)),
+    )
+    .inSingletonScope()
 
   // Local SQLite scaffold (mirrors Dagger's Room bindings in
   // ai-project-android) — not yet consumed by any ViewModel or screen.
   bind(AppDatabase).toSelf().inSingletonScope()
-  bind<RoomService>(TYPES.RoomService).to(RoomServiceImpl).inSingletonScope()
+  bind<RoomService>(TYPES.RoomService)
+    .toDynamicValue((context) => new RoomServiceImpl(context.container.get(AppDatabase)))
+    .inSingletonScope()
 
   // Facade over ApiService + RoomService + StorageService — mirrors
   // Dagger's Repository binding. BaseViewModel property-injects this
   // (not the individual services directly), so every ViewModel reaches
   // them via this.repository.apiService / .roomService / .storageService.
-  bind<Repository>(TYPES.Repository).to(AppRepositoryImpl).inSingletonScope()
+  bind<Repository>(TYPES.Repository)
+    .toDynamicValue(
+      (context) =>
+        new AppRepositoryImpl(
+          context.container.get<ApiService>(TYPES.ApiService),
+          context.container.get(StorageService),
+          () => context.container.get<RoomService>(TYPES.RoomService),
+        ),
+    )
+    .inSingletonScope()
 })
