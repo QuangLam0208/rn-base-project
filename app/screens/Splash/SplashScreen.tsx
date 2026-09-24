@@ -10,16 +10,10 @@ import type { ThemedStyle } from "@/theme/types"
 import { container } from "@/di/container"
 import { AuthStore } from "@/stores/authStore"
 
-// Mirrors ai-project-android's SplashActivity.SPLASH_DELAY_MS — a brief,
-// deliberate pause so the splash branding is actually visible, not just
-// a flash.
 const SPLASH_DELAY_MS = 1500
 
 /**
- * The first screen on cold start. No auth gate in this base project, and
- * no ViewModel — it has no state, just a fixed delay before resetting
- * straight to MainTabs. `navigation.reset`, not `navigate`, so MainTabs
- * doesn't end up behind Splash in the back stack.
+ * Fallback splash screen component (retained for backward compatibility).
  */
 export function SplashScreen() {
   const { themed } = useAppTheme()
@@ -38,7 +32,11 @@ export function SplashScreen() {
   }, [navigation])
 
   return (
-    <Screen preset="fixed" contentContainerStyle={themed($container)}>
+    <Screen
+      preset="fixed"
+      backgroundColor="#182029"
+      contentContainerStyle={themed($container)}
+    >
       <Image
         source={require("../../../assets/images/app-icon-android-adaptive-foreground.png")}
         style={themed($logo)}
@@ -60,6 +58,7 @@ const $logo: ThemedStyle<ImageStyle> = () => ({
   height: 140,
 })
 
-const $appName: ThemedStyle<TextStyle> = ({ spacing }) => ({
+const $appName: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   marginTop: spacing.md,
+  color: colors.white,
 })
