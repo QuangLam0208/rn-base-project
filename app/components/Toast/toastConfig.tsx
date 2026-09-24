@@ -1,51 +1,62 @@
 import React from "react"
-import { TouchableOpacity, View, ViewStyle, TextStyle } from "react-native"
+import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { ToastConfig, ToastConfigParams } from "react-native-toast-message"
 
 import { Icon, IconTypes } from "@/components/Icon"
 import { Text } from "@/components/Text"
-import { typography } from "@/theme/typography"
+import { useAppTheme } from "@/theme/context"
+import type { Colors, ThemedStyle } from "@/theme/types"
 
-interface ToastVariantConfig {
+type ToastVariant = "success" | "error" | "warning" | "normal"
+
+interface ToastVariantData {
   bg: string
   stroke: string
   iconColor: string
   icon: IconTypes
 }
 
-const TOAST_VARIANTS: Record<"success" | "error" | "warning" | "normal", ToastVariantConfig> = {
-  success: {
-    bg: "#1A2622",
-    stroke: "#15CCA3",
-    iconColor: "#15CCA3",
-    icon: "check",
-  },
-  error: {
-    bg: "#29181B",
-    stroke: "#FF4D4F",
-    iconColor: "#FF4D4F",
-    icon: "x",
-  },
-  warning: {
-    bg: "#292215",
-    stroke: "#FFA726",
-    iconColor: "#FFA726",
-    icon: "bell",
-  },
-  normal: {
-    bg: "#1D222A",
-    stroke: "#3D4654",
-    iconColor: "#4AA3BA",
-    icon: "bell",
-  },
+function getToastVariant(colors: Colors, variant: ToastVariant): ToastVariantData {
+  switch (variant) {
+    case "success":
+      return {
+        bg: colors.toastSuccessBg,
+        stroke: colors.toastSuccessStroke,
+        iconColor: colors.toastSuccessStroke,
+        icon: "check",
+      }
+    case "error":
+      return {
+        bg: colors.toastErrorBg,
+        stroke: colors.toastErrorStroke,
+        iconColor: colors.toastErrorStroke,
+        icon: "x",
+      }
+    case "warning":
+      return {
+        bg: colors.toastWarningBg,
+        stroke: colors.toastWarningStroke,
+        iconColor: colors.toastWarningStroke,
+        icon: "bell",
+      }
+    case "normal":
+    default:
+      return {
+        bg: colors.toastNormalBg,
+        stroke: colors.toastNormalStroke,
+        iconColor: colors.link,
+        icon: "bell",
+      }
+  }
 }
 
 interface CustomToastProps extends ToastConfigParams<any> {
-  variant: keyof typeof TOAST_VARIANTS
+  variant: ToastVariant
 }
 
 function CustomToastItem({ text1, text2, onPress, variant }: CustomToastProps) {
-  const config = TOAST_VARIANTS[variant]
+  const { theme, themed } = useAppTheme()
+  const config = getToastVariant(theme.colors, variant)
   const hasSubtitle = Boolean(text2)
 
   return (
@@ -53,24 +64,24 @@ function CustomToastItem({ text1, text2, onPress, variant }: CustomToastProps) {
       activeOpacity={0.9}
       onPress={onPress}
       style={[
-        $container,
+        themed($container),
         {
           backgroundColor: config.bg,
           borderColor: config.stroke,
         },
       ]}
     >
-      <View style={$iconWrapper}>
+      <View style={themed($iconWrapper)}>
         <Icon icon={config.icon} color={config.iconColor} size={18} />
       </View>
-      <View style={$textContainer}>
+      <View style={themed($textContainer)}>
         {hasSubtitle ? (
           <>
-            <Text text={text1} style={$titleText} numberOfLines={1} />
-            <Text text={text2} style={$subtitleText} numberOfLines={2} />
+            <Text text={text1} style={themed($titleText)} numberOfLines={1} />
+            <Text text={text2} style={themed($subtitleText)} numberOfLines={2} />
           </>
         ) : (
-          <Text text={text1} style={$singleText} numberOfLines={2} />
+          <Text text={text1} style={themed($singleText)} numberOfLines={2} />
         )}
       </View>
     </TouchableOpacity>
@@ -84,7 +95,7 @@ export const toastConfig: ToastConfig = {
   normal: (props) => <CustomToastItem {...props} variant="normal" />,
 }
 
-const $container: ViewStyle = {
+const $container: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flexDirection: "row",
   alignItems: "center",
   alignSelf: "center",
@@ -95,42 +106,42 @@ const $container: ViewStyle = {
   paddingVertical: 10,
   borderRadius: 24,
   borderWidth: 1.2,
-  shadowColor: "#000",
+  shadowColor: colors.black,
   shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.35,
+  shadowOpacity: 0.2,
   shadowRadius: 5,
   elevation: 6,
-}
+})
 
-const $iconWrapper: ViewStyle = {
+const $iconWrapper: ThemedStyle<ViewStyle> = () => ({
   marginRight: 10,
   justifyContent: "center",
   alignItems: "center",
-}
+})
 
-const $textContainer: ViewStyle = {
+const $textContainer: ThemedStyle<ViewStyle> = () => ({
   flexShrink: 1,
   justifyContent: "center",
-}
+})
 
-const $singleText: TextStyle = {
-  color: "#FFFFFF",
-  fontSize: 14,
+const $singleText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
+  color: colors.toastText,
+  fontSize: fontSizes.content,
   lineHeight: 20,
   fontFamily: typography.primary.medium,
-}
+})
 
-const $titleText: TextStyle = {
-  color: "#FFFFFF",
-  fontSize: 14,
+const $titleText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
+  color: colors.toastText,
+  fontSize: fontSizes.content,
   lineHeight: 18,
   fontFamily: typography.primary.bold,
   marginBottom: 2,
-}
+})
 
-const $subtitleText: TextStyle = {
-  color: "#CBD5E1",
-  fontSize: 13,
+const $subtitleText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
+  color: colors.toastTextDim,
+  fontSize: fontSizes.sm,
   lineHeight: 18,
   fontFamily: typography.primary.normal,
-}
+})

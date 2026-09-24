@@ -197,9 +197,9 @@ const $errorContainer: ThemedStyle<ViewStyle> = () => ({
   paddingHorizontal: 24,
 })
 
-const $errorText: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
+const $errorText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.normal,
-  fontSize: 16,
+  fontSize: fontSizes.title,
   color: colors.error,
   textAlign: "center",
   marginBottom: 16,
@@ -243,17 +243,17 @@ const $profileInfo: ThemedStyle<ViewStyle> = () => ({
   paddingHorizontal: 12,
 })
 
-const $nameText: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
+const $nameText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.bold,
-  fontSize: 22,
-  lineHeight: 28,
+  fontSize: fontSizes.title,
+  lineHeight: 22,
   color: colors.text,
   textAlign: "center",
 })
 
-const $positionText: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
+const $positionText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.semiBold,
-  fontSize: 15,
+  fontSize: fontSizes.md,
   lineHeight: 20,
   color: colors.tint,
   marginTop: 4,
@@ -286,19 +286,19 @@ const $metaRowBorderTop: ThemedStyle<ViewStyle> = ({ colors }) => ({
   borderTopColor: colors.border,
 })
 
-const $metaLabel: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
+const $metaLabel: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.medium,
-  fontSize: 14,
+  fontSize: fontSizes.content,
   lineHeight: 20,
   color: colors.textDim,
   marginRight: 16,
   flexShrink: 0,
 })
 
-const $metaValue: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
+const $metaValue: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   flex: 1,
   fontFamily: typography.primary.semiBold,
-  fontSize: 14,
+  fontSize: fontSizes.content,
   lineHeight: 20,
   color: colors.text,
   textAlign: "right",
@@ -321,16 +321,16 @@ const $quoteIconWrapper: ThemedStyle<ViewStyle> = () => ({
   marginBottom: 12,
 })
 
-const $descriptionText: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
+const $descriptionText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.normal,
-  fontSize: 15,
-  lineHeight: 24,
+  fontSize: fontSizes.content,
+  lineHeight: 22,
   color: colors.text,
 })
 
-const $emptyDescriptionText: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
+const $emptyDescriptionText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.normal,
-  fontSize: 15,
+  fontSize: fontSizes.content,
   fontStyle: "italic",
   color: colors.textDim,
   textAlign: "center",
