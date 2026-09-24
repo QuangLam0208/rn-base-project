@@ -1,11 +1,8 @@
 import { injectable } from "inversify"
 
-import { AppDatabase } from "@/data/local/room/AppDatabase"
 import { RoomService } from "@/data/local/room/RoomService"
-import { RoomServiceImpl } from "@/data/local/room/RoomServiceImpl"
 import { StorageService } from "@/data/local/storage/StorageService"
 import { ApiService } from "@/data/remote/api/ApiService"
-import { ApiServiceImpl } from "@/data/remote/api/ApiServiceImpl"
 
 import { Repository } from "./Repository"
 
@@ -33,11 +30,12 @@ export class AppRepositoryImpl implements Repository {
   constructor(
     readonly apiService: ApiService,
     readonly storageService: StorageService,
+    private readonly roomServiceProvider: () => RoomService,
   ) {}
 
   get roomService(): RoomService {
     if (!this._roomService) {
-      this._roomService = new RoomServiceImpl(new AppDatabase())
+      this._roomService = this.roomServiceProvider()
     }
     return this._roomService
   }

@@ -6,6 +6,7 @@ import { HomeViewModel } from "@/screens/Home/HomeViewModel"
 import { LoginViewModel } from "@/screens/Login/LoginViewModel"
 import { MentorsViewModel } from "@/screens/Mentors/MentorsViewModel"
 import { MentorDetailViewModel } from "@/screens/MentorDetail/MentorDetailViewModel"
+import { TodoListViewModel } from "@/screens/TodoList/TodoListViewModel"
 
 /**
  * ViewModel bindings — mirrors ai-project-android's Dagger
@@ -20,4 +21,5 @@ export const viewModelModule = new ContainerModule((bind) => {
   bind(MentorsViewModel).toSelf()
   bind(MentorDetailViewModel).toSelf()
   bind(CompaniesViewModel).toSelf()
+  bind(TodoListViewModel).toSelf()
 })

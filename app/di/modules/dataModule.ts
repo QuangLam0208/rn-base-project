@@ -66,6 +66,7 @@ export const dataModule = new ContainerModule((bind) => {
         new AppRepositoryImpl(
           context.container.get<ApiService>(TYPES.ApiService),
           context.container.get(StorageService),
+          () => context.container.get<RoomService>(TYPES.RoomService),
         ),
     )
     .inSingletonScope()
