@@ -1,5 +1,5 @@
 import { injectable } from "inversify"
-import { actionBound, makeObservable, observable } from "mobx"
+import { actionBound, makeObservable, observable, runInAction } from "mobx"
 
 import { CompanyResponse } from "@/data/model/api/response/company/CompanyResponse"
 import { BaseViewModel } from "@/viewmodels/base/BaseViewModel"
@@ -33,12 +33,18 @@ export class CompaniesViewModel extends BaseViewModel {
 
     try {
       const pageData = await this.repository.apiService.getPublicCompanies(0, 50)
-      this.companies = pageData.content ?? []
+      runInAction(() => {
+        this.companies = pageData.content ?? []
+      })
     } catch (err) {
-      this.error = "error-load-companies"
+      runInAction(() => {
+        this.error = "error-load-companies"
+      })
     } finally {
-      this.isInitialLoading = false
-      this.isRefreshing = false
+      runInAction(() => {
+        this.isInitialLoading = false
+        this.isRefreshing = false
+      })
     }
   }
 

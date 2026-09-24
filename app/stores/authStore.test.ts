@@ -1,8 +1,16 @@
 import { remove } from "@/data/local/storage"
 
-import { authStore } from "./authStore"
+import { StorageService } from "@/data/local/storage/StorageService"
+import { AuthStore } from "./authStore"
 
 describe("authStore", () => {
+  let authStore: AuthStore
+  
+  beforeEach(() => {
+    const storageService = new StorageService()
+    authStore = new AuthStore(storageService)
+  })
+
   afterEach(() => {
     authStore.clearToken()
   })

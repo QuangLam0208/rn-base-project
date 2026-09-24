@@ -11,7 +11,8 @@ import { Switch } from "@/components/Toggle/Switch"
 import { changeLanguage, getCurrentLanguage, SupportedLanguageTag, TxKeyPath } from "@/i18n"
 import { translate } from "@/i18n/translate"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
-import { authStore } from "@/stores/authStore"
+import { container } from "@/di/container"
+import { AuthStore } from "@/stores/authStore"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 import { checkForUpdate, downloadAndApplyUpdate } from "@/utils/appUpdates"
@@ -29,7 +30,7 @@ const updateStatusTx: Partial<Record<UpdateStatus, TxKeyPath>> = {
 }
 
 export function SettingsScreen() {
-  const { themed, themeContext, setThemeContextOverride } = useAppTheme()
+  const { themed, theme, themeContext, setThemeContextOverride } = useAppTheme()
   const navigation = useNavigation<AppStackScreenProps<"Settings">["navigation"]>()
 
   const handleLogout = () => {
@@ -42,7 +43,7 @@ export function SettingsScreen() {
           text: translate("settingsScreen:logout"),
           style: "destructive",
           onPress: () => {
-            authStore.clearToken()
+            container.get(AuthStore).clearToken()
             navigation.reset({
               index: 0,
               routes: [{ name: "Login" }],
@@ -141,7 +142,7 @@ export function SettingsScreen() {
           onPress={handleLogout}
           activeOpacity={0.8}
         >
-          <Icon icon="logout" size={20} color="#FFFFFF" style={themed($logoutIcon)} />
+          <Icon icon="logout" size={20} color={theme.colors.dangerText} style={themed($logoutIcon)} />
           <Text tx="settingsScreen:logout" style={themed($logoutText)} />
         </TouchableOpacity>
       </View>
@@ -196,11 +197,11 @@ const $footer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingBottom: spacing.lg,
 })
 
-const $logoutButton: ThemedStyle<ViewStyle> = () => ({
+const $logoutButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "center",
-  backgroundColor: "#E53935",
+  backgroundColor: colors.danger,
   borderRadius: 10,
   height: 52,
 })
@@ -209,9 +210,9 @@ const $logoutIcon: ThemedStyle<ImageStyle> = () => ({
   marginRight: 8,
 })
 
-const $logoutText: ThemedStyle<TextStyle> = ({ typography }) => ({
+const $logoutText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.semiBold,
-  fontSize: 16,
+  fontSize: fontSizes.title,
   fontWeight: "600",
-  color: "#FFFFFF",
+  color: colors.dangerText,
 })

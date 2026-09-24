@@ -5,6 +5,8 @@ import { MasterApiService } from "@/data/remote/api/master/MasterApiService"
 import { MasterApiServiceImpl } from "@/data/remote/api/master/MasterApiServiceImpl"
 import { Repository } from "@/data/Repository"
 import { HomeViewModel } from "@/screens/Home/HomeViewModel"
+import { LoginViewModel } from "@/screens/Login/LoginViewModel"
+import { AuthStore } from "@/stores/authStore"
 
 import { container } from "./container"
 import { TYPES } from "./types"
@@ -35,6 +37,13 @@ describe("container", () => {
     expect(repository1).toBe(repository2)
   })
 
+  it("resolves ViewModels in transient scope (creates a new instance on every resolution)", () => {
+    const homeVm1 = container.get(HomeViewModel)
+    const homeVm2 = container.get(HomeViewModel)
+
+    expect(homeVm1).not.toBe(homeVm2)
+  })
+
   it("resolves MasterApiService against a separate Api instance pointed at the second base URL", () => {
     const mainApi = container.get(Api)
     const masterApi = container.get<Api>(TYPES.MasterApi)
@@ -47,4 +56,26 @@ describe("container", () => {
     const masterApiService = container.get<MasterApiService>(TYPES.MasterApiService)
     expect(masterApiService).toBeInstanceOf(MasterApiServiceImpl)
   })
+
+  it("resolves AuthStore as a singleton", () => {
+    const auth1 = container.get(AuthStore)
+    const auth2 = container.get(AuthStore)
+    expect(auth1).toBe(auth2)
+  })
+
+  it("property-injects the shared AuthStore singleton into LoginViewModel", () => {
+    const loginVm = container.get(LoginViewModel)
+    const authStore = (loginVm as unknown as { authStore: AuthStore }).authStore
+    expect(authStore).toBe(container.get(AuthStore))
+  })
+
+  it("shares the same AuthStore singleton between LoginViewModel and Api in Repository", () => {
+    const authStore = container.get(AuthStore)
+    const repo = container.get<Repository>(TYPES.Repository)
+    const apiService = repo.apiService as ApiServiceImpl
+    const api = (apiService as unknown as { api: Api }).api
+
+    expect((api as unknown as { authStore: AuthStore }).authStore).toBe(authStore)
+  })
 })
+

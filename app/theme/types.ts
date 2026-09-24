@@ -2,10 +2,13 @@ import type { StyleProp } from "react-native"
 
 import { colors as colorsLight } from "./colors"
 import { colors as colorsDark } from "./colorsDark"
+import { fontSizes, FontSizes } from "./fontSizes"
 import { spacing as spacingLight } from "./spacing"
 import { spacing as spacingDark } from "./spacingDark"
 import { timing } from "./timing"
 import { typography } from "./typography"
+
+export type { FontSizes }
 
 // This supports "light" and "dark" themes by default. If undefined, it'll use the system theme
 export type ImmutableThemeContextModeT = "light" | "dark"
@@ -26,6 +29,7 @@ export interface Theme {
   colors: Colors
   spacing: Spacing
   typography: Typography
+  fontSizes: FontSizes
   timing: Timing
   isDark: boolean
 }

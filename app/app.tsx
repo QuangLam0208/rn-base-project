@@ -18,7 +18,7 @@ if (__DEV__) {
 }
 import "./utils/gestureHandler"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useFonts } from "expo-font"
 import * as Linking from "expo-linking"
 import * as SplashScreen from "expo-splash-screen"
@@ -33,6 +33,8 @@ import { AppNavigator } from "./navigators/AppNavigator"
 import { useNavigationPersistence } from "./navigators/navigationUtilities"
 import { ThemeProvider } from "./theme/context"
 import { customFontsToLoad } from "./theme/typography"
+import Toast from "react-native-toast-message"
+import { toastConfig } from "./components/Toast"
 import { initCrashReporting } from "./utils/crashReporting"
 import { loadDateFnsLocale } from "./utils/formatDate"
 
@@ -42,6 +44,11 @@ initCrashReporting()
 SplashScreen.preventAutoHideAsync()
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
+
+// Ensures the native splash is visible for at least 1.5s so the user can see the branding,
+// while giving React time to initialize and paint the initial screen in the background.
+const appBootTime = Date.now()
+const MIN_SPLASH_DISPLAY_TIME_MS = 1500
 
 // Web linking configuration
 const prefix = Linking.createURL("/")
@@ -88,9 +95,30 @@ export function App() {
   const isReady =
     isNavigationStateRestored && isI18nInitialized && (areFontsLoaded || Boolean(fontLoadError))
 
+  const onNavigationReady = useCallback(() => {
+    const elapsed = Date.now() - appBootTime
+    const remaining = Math.max(0, MIN_SPLASH_DISPLAY_TIME_MS - elapsed)
+
+    setTimeout(() => {
+      // Double rAF ensures the UI thread has committed and painted the initial frame
+      // before dismissing the native splash overlay.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          SplashScreen.hideAsync().catch(() => {})
+        })
+      })
+    }, remaining)
+  }, [])
+
   useEffect(() => {
     if (isReady) {
-      SplashScreen.hideAsync().catch(() => {})
+      // Safety fallback in case onNavigationReady doesn't fire
+      const elapsed = Date.now() - appBootTime
+      const remaining = Math.max(0, MIN_SPLASH_DISPLAY_TIME_MS - elapsed) + 2000
+      const timer = setTimeout(() => {
+        SplashScreen.hideAsync().catch(() => {})
+      }, remaining)
+      return () => clearTimeout(timer)
     }
   }, [isReady])
 
@@ -115,7 +143,9 @@ export function App() {
             linking={linking}
             initialState={initialNavigationState}
             onStateChange={onNavigationStateChange}
+            onReady={onNavigationReady}
           />
+          <Toast config={toastConfig} />
         </ThemeProvider>
       </KeyboardProvider>
     </SafeAreaProvider>

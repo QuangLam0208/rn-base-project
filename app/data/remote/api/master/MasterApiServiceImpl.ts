@@ -1,5 +1,5 @@
 import { ApiResponse } from "apisauce"
-import { inject, injectable } from "inversify"
+import { injectable } from "inversify"
 
 import Config from "@/config"
 import { PostItem } from "@/data/model/api/item/PostItem"
@@ -21,7 +21,7 @@ const MASTER_API_CONFIG = { url: Config.MASTER_API_URL, timeout: 10000 }
  */
 @injectable()
 export class MasterApiServiceImpl implements MasterApiService {
-  constructor(@inject(TYPES.MasterApi) private api: Api = new Api(undefined, MASTER_API_CONFIG)) {}
+  constructor(private api: Api) {}
 
   private async request<T>(fn: () => Promise<ApiResponse<T>>): Promise<T> {
     const response = await fn()

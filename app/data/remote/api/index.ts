@@ -6,10 +6,10 @@
  * documentation for more details.
  */
 import { ApisauceInstance, create } from "apisauce"
-import { inject, injectable, unmanaged } from "inversify"
+import { injectable } from "inversify"
 
 import Config from "@/config"
-import { authStore as defaultAuthStore, AuthStore } from "@/stores/authStore"
+import { AuthStore } from "@/stores/authStore"
 
 import { logApiCall } from "./apiLogger"
 import type { ApiConfig } from "./types"
@@ -52,8 +52,8 @@ export class Api {
    * Set up our API instance. Keep this lightweight!
    */
   constructor(
-    @inject(AuthStore) private authStore: AuthStore = defaultAuthStore,
-    @unmanaged() config: ApiConfig = DEFAULT_API_CONFIG,
+    private authStore: AuthStore,
+    config: ApiConfig = DEFAULT_API_CONFIG,
   ) {
     this.config = config
     this.apisauce = create({

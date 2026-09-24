@@ -1,3 +1,4 @@
+import { TodoDao } from "./TodoDao"
 import { UserDao } from "./UserDao"
 
 /**
@@ -7,4 +8,5 @@ import { UserDao } from "./UserDao"
  */
 export interface RoomService {
   userDao(): UserDao
+  todoDao(): TodoDao
 }

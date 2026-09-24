@@ -36,6 +36,13 @@ export const HomeScreen = observer(function HomeScreen() {
         <Text tx="homeScreen:subtitle" style={themed($subtitle)} />
         <Text text={String(viewModel.count)} preset="heading" style={themed($count)} />
         <Button tx="homeScreen:incrementButton" onPress={viewModel.increment} />
+
+        <View style={themed($divider)} />
+        <Button
+          tx="homeScreen:openTodoListButton"
+          onPress={() => navigation.navigate("TodoList")}
+          style={themed($demoButton)}
+        />
       </View>
     </Screen>
   )
@@ -70,4 +77,12 @@ const $subtitle: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
 
 const $count: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
+})
+
+const $divider: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  height: spacing.xl,
+})
+
+const $demoButton: ThemedStyle<ViewStyle> = () => ({
+  width: "100%",
 })

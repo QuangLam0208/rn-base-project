@@ -105,9 +105,9 @@ const $headerContainer: ThemedStyle<ViewStyle> = () => ({
   paddingVertical: 14,
 })
 
-const $headingText: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
+const $headingText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.semiBold,
-  fontSize: 19,
+  fontSize: fontSizes.title,
   color: colors.text,
   textAlign: "center",
 })
@@ -127,9 +127,9 @@ const $emptyContainer: ThemedStyle<ViewStyle> = () => ({
   paddingBottom: 60,
 })
 
-const $emptyText: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
+const $emptyText: ThemedStyle<TextStyle> = ({ typography, colors, fontSizes }) => ({
   fontFamily: typography.primary.normal,
-  fontSize: 16,
+  fontSize: fontSizes.content,
   color: colors.textDim,
   marginTop: 12,
   textAlign: "center",

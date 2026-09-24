@@ -1,5 +1,5 @@
 import { ApiResponse } from "apisauce"
-import { inject, injectable } from "inversify"
+import { injectable } from "inversify"
 
 import { getGeneralApiProblem } from "./apiProblem"
 import { ApiService } from "./ApiService"
@@ -22,7 +22,7 @@ import { LoginResponse } from "@/data/model/api/response/user/LoginResponse"
  */
 @injectable()
 export class ApiServiceImpl implements ApiService {
-  constructor(@inject(Api) private api: Api = new Api()) {}
+  constructor(private api: Api) {}
 
   protected async request<T>(fn: () => Promise<ApiResponse<T>>): Promise<T> {
     const response = await fn()
@@ -52,8 +52,8 @@ export class ApiServiceImpl implements ApiService {
   async getCourses(page = 0, size = 20): Promise<PageResponse<CourseResponse>> {
     const res = await this.request<ResponseWrapper<PageResponse<CourseResponse>>>(() =>
       this.api.apisauce.get<ResponseWrapper<PageResponse<CourseResponse>>>("/v1/course/list", {
-        "pageable.page": page,
-        "pageable.size": size,
+        page,
+        size,
       }),
     )
     return {

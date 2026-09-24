@@ -1,7 +1,8 @@
-import { inject, injectable } from "inversify"
+import { injectable } from "inversify"
 
 import { AppDatabase } from "./AppDatabase"
 import { RoomService } from "./RoomService"
+import { TodoDao } from "./TodoDao"
 import { UserDao } from "./UserDao"
 
 /**
@@ -10,9 +11,13 @@ import { UserDao } from "./UserDao"
  */
 @injectable()
 export class RoomServiceImpl implements RoomService {
-  constructor(@inject(AppDatabase) private appDatabase: AppDatabase = new AppDatabase()) {}
+  constructor(private appDatabase: AppDatabase) {}
 
   userDao(): UserDao {
     return this.appDatabase.getUserDao()
+  }
+
+  todoDao(): TodoDao {
+    return this.appDatabase.getTodoDao()
   }
 }

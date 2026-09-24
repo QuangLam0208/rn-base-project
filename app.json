@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "orientation": "portrait",
   "userInterfaceStyle": "automatic",
+  "backgroundColor": "#182029",
   "icon": "./assets/images/app-icon-all.png",
   "runtimeVersion": "1.0.0",
   "newArchEnabled": true,
@@ -15,6 +16,7 @@
   "android": {
     "icon": "./assets/images/app-icon-android-legacy.png",
     "package": "com.baseapp",
+    "backgroundColor": "#182029",
     "adaptiveIcon": {
       "foregroundImage": "./assets/images/app-icon-android-adaptive-foreground.png",
       "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
@@ -39,17 +41,21 @@
     [
       "expo-splash-screen",
       {
-        "image": "./assets/images/app-icon-android-adaptive-foreground.png",
+        "image": "./assets/images/splash-logo-with-brand.png",
         "imageWidth": 300,
         "resizeMode": "contain",
-        "backgroundColor": "#182029"
+        "backgroundColor": "#FFFFFF",
+        "dark": {
+          "image": "./assets/images/splash-logo-with-brand.png",
+          "backgroundColor": "#182029"
+        }
       }
     ],
     [
       "react-native-edge-to-edge",
       {
         "android": {
-          "parentTheme": "Light",
+          "parentTheme": "Default",
           "enforceNavigationBarContrast": false
         }
       }
