@@ -19,12 +19,8 @@ class MainActivity : ReactActivity() {
     // setTheme(R.style.AppTheme);
     // @generated begin expo-splashscreen - expo prebuild (DO NOT MODIFY) sync-f3ff59a738c56c9a6119210cb55f0b613eb8b6af
     SplashScreenManager.registerOnActivity(this)
-    // Prevent premature auto-hiding when React Native New Architecture fires CONTENT_APPEARED
-    // before the JS bundle is loaded and executed.
-    SplashScreenManager.preventAutoHideCalled = true
     // @generated end expo-splashscreen
     super.onCreate(null)
-    window.setBackgroundDrawableResource(R.color.splashscreen_background)
   }
 
   /**
@@ -45,13 +41,7 @@ class MainActivity : ReactActivity() {
               this,
               mainComponentName,
               fabricEnabled
-          ){
-              override fun createRootView(): com.facebook.react.ReactRootView {
-                  return com.facebook.react.ReactRootView(this@MainActivity).apply {
-                      setBackgroundResource(R.color.splashscreen_background)
-                  }
-              }
-          })
+          ){})
   }
 
   /**
