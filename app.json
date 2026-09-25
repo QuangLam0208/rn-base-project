@@ -8,8 +8,6 @@
   "backgroundColor": "#182029",
   "icon": "./assets/images/app-icon-all.png",
   "runtimeVersion": "1.0.0",
-  "newArchEnabled": true,
-  "jsEngine": "hermes",
   "assetBundlePatterns": [
     "**/*"
   ],
@@ -22,14 +20,23 @@
       "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
     },
     "allowBackup": false,
-    "edgeToEdgeEnabled": true,
     "googleServicesFile": "./google-services.json"
   },
   "ios": {
     "icon": "./assets/images/app-icon-ios.png",
     "supportsTablet": true,
     "bundleIdentifier": "com.baseapp",
-    "googleServicesFile": "./GoogleService-Info.plist"
+    "googleServicesFile": "./GoogleService-Info.plist",
+    "privacyManifests": {
+      "NSPrivacyAccessedAPITypes": [
+        {
+          "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+          "NSPrivacyAccessedAPITypeReasons": [
+            "CA92.1"
+          ]
+        }
+      ]
+    }
   },
   "web": {
     "favicon": "./assets/images/app-icon-web-favicon.png",
@@ -79,6 +86,13 @@
   "extra": {
     "ignite": {
       "version": "UNKNOWN"
+    },
+    "eas": {
+      "projectId": "f6a397db-d5b1-41be-9dfd-4cf1e6a998f2"
     }
+  },
+  "owner": "qlpersy32s-team",
+  "updates": {
+    "url": "https://u.expo.dev/f6a397db-d5b1-41be-9dfd-4cf1e6a998f2"
   }
 }

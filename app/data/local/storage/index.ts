@@ -1,6 +1,26 @@
 import { MMKV } from "react-native-mmkv"
+import { isExpoGo } from "@/utils/IsExpoGo"
+import { ExpoGoKVStorage } from "./ExpoGoKVStorage"
 
-export const storage = new MMKV()
+function createStorage(): MMKV {
+  if (isExpoGo) {
+    console.warn(
+      "[Storage] Running in Expo Go environment. Using ExpoGoKVStorage fallback.",
+    )
+    return new ExpoGoKVStorage() as unknown as MMKV
+  }
+
+  try {
+    return new MMKV()
+  } catch {
+    console.warn(
+      "[Storage] Native MMKV not available. Using ExpoGoKVStorage fallback.",
+    )
+    return new ExpoGoKVStorage() as unknown as MMKV
+  }
+}
+
+export const storage = createStorage()
 
 /**
  * Loads a string from storage.

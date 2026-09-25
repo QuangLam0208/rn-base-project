@@ -23,13 +23,26 @@ import {
   setCrashlyticsCollectionEnabled,
 } from "@react-native-firebase/crashlytics"
 
-const crashlyticsInstance = getCrashlytics()
+import { isExpoGo } from "@/utils/IsExpoGo"
+
+let crashlyticsInstance: ReturnType<typeof getCrashlytics> | null = null
+if (!isExpoGo) {
+  try {
+    crashlyticsInstance = getCrashlytics()
+  } catch {
+    // Firebase native modules are not available
+  }
+}
 
 /**
  *  This is where you put your crash reporting service initialization code to call in `./app/app.tsx`
  */
 export const initCrashReporting = () => {
-  setCrashlyticsCollectionEnabled(crashlyticsInstance, !__DEV__)
+  if (crashlyticsInstance) {
+    try {
+      setCrashlyticsCollectionEnabled(crashlyticsInstance, !__DEV__)
+    } catch {}
+  }
 }
 
 /**
@@ -51,13 +64,15 @@ export enum ErrorType {
  * Manually report a handled error.
  */
 export const reportCrash = (error: Error, type: ErrorType = ErrorType.FATAL) => {
-  if (__DEV__) {
+  if (__DEV__ || !crashlyticsInstance) {
     // Log to console and Reactotron in development
     const message = error.message || "Unknown"
     console.error(error)
     console.log(message, type)
   } else {
-    crashlyticsLog(crashlyticsInstance, type)
-    recordError(crashlyticsInstance, error)
+    try {
+      crashlyticsLog(crashlyticsInstance, type)
+      recordError(crashlyticsInstance, error)
+    } catch {}
   }
 }
