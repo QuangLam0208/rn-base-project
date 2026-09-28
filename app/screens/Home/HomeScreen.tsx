@@ -34,8 +34,8 @@ export const HomeScreen = observer(function HomeScreen() {
 
       <View style={themed($body)}>
         <Text tx="homeScreen:subtitle" style={themed($subtitle)} />
-        <Text text={String(viewModel.count)} preset="heading" style={themed($count)} />
-        <Button tx="homeScreen:incrementButton" onPress={viewModel.increment} />
+        {/* <Text text={String(viewModel.count)} preset="heading" style={themed($count)} />
+        <Button tx="homeScreen:incrementButton" onPress={viewModel.increment} /> */}
 
         <View style={themed($divider)} />
         <Button
