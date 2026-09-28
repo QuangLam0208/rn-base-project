@@ -116,36 +116,62 @@ EAS Update Server là hệ thống máy chủ biên (CDN) phân tán toàn cầu
 - Vì vậy, `expo-updates` quy định: **Thiết bị chỉ tải và áp dụng bản cập nhật OTA khi bản cập nhật đó có `runtimeVersion` khớp chính xác với `runtimeVersion` của bản build đang chạy**.
 - Trong dự án này, `runtimeVersion` được gán cố định là `"1.0.0"`.
 
-### 2.3 Phân biệt chi tiết: Channel vs Branch
+### 2.3 Phân biệt chi tiết: Channel vs Branch (Ví von trực quan)
 
-Đây là hai khái niệm dễ nhầm lẫn nhất khi sử dụng EAS Update:
+Để dễ hình dung nhất bản chất kỹ thuật, hãy liên tưởng đến mô hình **Kho hàng** và **Kênh phát sóng truyền hình**:
 
-* **Branch (Nhánh):** Là một dòng lịch sử lưu trữ các bản cập nhật (tương tự branch trong Git). Một bản update khi đẩy lên **luôn luôn nằm trong một branch**.
-* **Channel (Kênh):** Là "kênh sóng" mà file cài đặt (APK/IPA) trên máy người dùng được cấu hình để lắng nghe. Một **Channel** sẽ **trỏ tới một Branch**.
+* **Branch (Nhánh) = Kho chứa hàng / Băng đĩa ghi hình:** Là nơi lưu trữ code. Bạn có thể tạo nhiều kho: `test-preview`, `hotfix-login`, `staging`... Mỗi kho lưu một phiên bản code riêng biệt.
+* **Channel (Kênh) = Kênh phát sóng (Kênh Preview, Kênh Production):** Là tần số sóng mà ứng dụng trên điện thoại đang bắt tín hiệu. Bản thân Channel không chứa code, nó chỉ là một **chiếc kim chỉ đường (Pointer)** chỉ vào xem hôm nay sẽ phát sóng nội dung từ Kho (Branch) nào.
+* **Chiếc điện thoại (App APK) = Chiếc TV của khán giả:** Được cài sẵn để luôn bật Kênh (Channel) `preview`.
 
 ```
-[Bản APK Preview trên điện thoại] ──► Nghe theo [Channel: preview]
-                                                        │
-                                                        ▼ (Trỏ vào)
-                                                [Branch: preview] ◄── Đẩy qua: `eas update --channel preview`
-                                                                      (Bản APK trên máy sẽ NHẬN ĐƯỢC)
-
-
-                                                [Branch: test-preview] ◄── Đẩy qua: `eas update --branch test-preview`
-                                                        ▲
-                                                        │ (Chỉ xem được khi mở)
-                                                [Ứng dụng Expo Go]
+                     ┌──────────────────┐
+                     │   MÃ NGUỒN MỚI   │
+                     └─────────┬────────┘
+                               │
+            ┌──────────────────┴──────────────────┐
+            ▼                                     ▼
+Lệnh: `update --branch test-preview`     Lệnh: `update --channel preview`
+(Chỉ định cất vào KHO nào)               (Chỉ định phát lên KÊNH nào cho khán giả)
+            │                                     │
+            ▼                                     ▼
+   [Kho: test-preview] ◄────────────── [Kênh: preview]
+            │                                     │
+            ▼                                     ▼
+(Ai vào Kho bằng Expo Go sẽ thấy)         (Mọi chiếc TV/App APK đang bật 
+                                           Kênh preview sẽ thấy ngay)
 ```
 
-### 2.4 So sánh câu lệnh: `--channel` vs `--branch`
+---
 
-| Tiêu chí | `eas update --channel preview` | `npx eas-cli update --branch test-preview` |
+### 2.4 So sánh chuyên sâu: `--channel` vs `--branch`
+
+#### A. Phân tích chi tiết từng câu lệnh:
+
+1. **Lệnh `update --branch <tên-branch>` (Góc nhìn của Developer / Kho hàng):**
+   - **Ý nghĩa:** Bạn ra lệnh cho EAS: *"Hãy đóng gói code này và cất vào **Kho (Branch) mang tên `test-preview`** cho tôi"*.
+   - **Ai sẽ nhận được?**
+     - Những ai mở app **Expo Go** (vào mục Projects chọn đúng kho `test-preview`).
+     - Bất kỳ Channel nào **đang được liên kết trỏ vào kho này** (ví dụ Channel `preview` đang trỏ vào `test-preview` thì app APK cũng sẽ nhận được luôn).
+2. **Lệnh `update --channel <tên-channel>` (Góc nhìn của Vận hành / Kênh phát sóng):**
+   - **Ý nghĩa:** Bạn ra lệnh cho EAS: *"Tôi muốn **tất cả người dùng đang cài app ở Kênh `preview`** phải nhận được bản cập nhật này ngay lập tức!"*.
+   - **EAS sẽ làm gì?** Bạn không cần nhớ Channel `preview` đang nối vào branch nào. EAS sẽ tự động tra cứu: *"Kênh preview đang trỏ vào Kho `test-preview`, vậy tôi sẽ nạp code mới vào Kho `test-preview` để phát cho app APK"*.
+
+#### B. Bảng so sánh trực diện:
+
+| Tiêu chí | `npx eas-cli update --branch test-preview` | `npx eas-cli update --channel preview` |
 |---|---|---|
-| **Cơ chế hoạt động** | EAS tự tìm Branch mà Channel `preview` đang trỏ tới (mặc định là branch `preview`) và xuất bản bản vá vào đó. | Xuất bản bản vá trực tiếp vào Branch mang tên `test-preview`. |
-| **Đối tượng tiếp nhận** | **Tất cả điện thoại đang cài bản APK `preview`** sẽ lập tức nhận được bản cập nhật. | **Chỉ những ai mở app Expo Go** chọn đúng branch `test-preview` mới xem được (trừ khi có Channel nào được trỏ vào branch này). |
-| **Khi nào nên dùng?** | Dùng khi **sửa lỗi cho người dùng thật** đang cài app trên điện thoại. | Dùng khi **muốn test nhanh nội bộ** qua Expo Go trước khi tung ra channel chính thức. |
-| **Tham số `--platform all`** | Mặc định không truyền `--platform` thì EAS vẫn build cho cả iOS và Android. Ghi `--platform all` mang tính tường minh. | Giống nhau, áp dụng cho cả hai nền tảng. |
-| **Tiền tố `eas` vs `npx eas-cli`** | Gọi công cụ cài toàn cục (`npm i -g eas-cli`). | Gọi trực tiếp qua `npx` của Node.js mà không cần cài đặt toàn cục. Bản chất công cụ là một. |
+| **Bạn đang chọn gì?** | Chọn đích danh **Nơi lưu trữ code (Branch)**. | Chọn đích danh **Đối tượng người dùng nhận code (Channel)**. |
+| **Góc độ sử dụng** | **Dành cho DEV / TESTER:** Muốn tạo nhiều nhánh thử nghiệm (`branch-a`, `branch-b`) để mở bằng Expo Go xem trước mà chưa muốn người dùng cài APK bị ảnh hưởng. | **Dành cho RELEASE / VẬN HÀNH:** Muốn bắn bản vá sửa lỗi thẳng tới tay người dùng đang cài app. |
+| **Expo Go có xem được không?** | **Xem được** (vì Expo Go mở theo tên Branch). | **Xem được** (vì EAS cũng sẽ đẩy vào Branch mà Channel đó đang trỏ tới). |
+| **Máy cài APK có nhận được không?** | **CÓ NHẬN ĐƯỢC** (nếu Channel của APK đang trỏ vào branch `test-preview`). | **CHẮC CHẮN NHẬN ĐƯỢC 100%**. |
+| **Tiền tố `eas` vs `npx eas-cli`** | Giống nhau, gọi cùng một công cụ. Dùng `npx eas-cli` an toàn hơn vì không phụ thuộc vào việc máy tính đã cài đặt biến môi trường toàn cục hay chưa. |
+
+#### C. Áp dụng vào thực tế dự án của bạn:
+Hiện tại Channel `preview` của bạn đang trỏ vào Branch `test-preview`. Do đó:
+- Bạn chạy `update --branch test-preview`
+- Hay bạn chạy `update --channel preview`
+👉 **Kết quả cuối cùng đều là 1**: Code đều được đẩy vào branch `test-preview`, và chiếc điện thoại cài APK của bạn đều sẽ nhận được bản cập nhật như nhau! (Sự khác biệt chỉ xảy ra khi bạn tạo nhiều branch độc lập khác nhau mà chưa muốn phát sóng cho Channel).
 
 ### 2.5 Chiến lược nạp bản vá (Cold Start vs Manual Trigger)
 
