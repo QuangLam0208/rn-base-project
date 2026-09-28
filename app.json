@@ -93,6 +93,7 @@
   },
   "owner": "qlpersy32s-team",
   "updates": {
-    "url": "https://u.expo.dev/f6a397db-d5b1-41be-9dfd-4cf1e6a998f2"
+    "url": "https://u.expo.dev/f6a397db-d5b1-41be-9dfd-4cf1e6a998f2",
+    "fallbackToCacheTimeout": 5000
   }
 }

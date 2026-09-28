@@ -22,6 +22,12 @@ Tài liệu này hướng dẫn toàn diện về cơ chế hoạt động, ki�
    - 4.1 [Chi phí dịch vụ](#41-chi-phí-dịch-vụ)
    - 4.2 [Thiết lập công cụ & Xử lý lệnh `eas`](#42-thiết-lập-công-cụ--xử-lý-lệnh-eas)
 5. [Quy trình thực chiến: Kiểm thử OTA trên Android](#5-quy-trình-thực-chiến-kiểm-thử-ota-trên-android)
+   - 5.1 [Bước 0: Tạo bản cài đặt APK gốc (Base Build)](#51-bước-0-tạo-bản-cài-đặt-apk-gốc-base-build)
+   - 5.2 [Bước 1: Sửa đổi mã nguồn (Fix bug)](#52-bước-1-sửa-đổi-mã-nguồn-fix-bug--giả-lập-bản-vá)
+   - 5.3 [Bước 2: Kiểm tra tính hợp lệ](#53-bước-2-kiểm-tra-tính-hợp-lệ-của-mã-nguồn)
+   - 5.4 [Bước 3: Xuất bản bản vá OTA](#54-bước-3-xuất-bản-bản-vá-ota-lên-eas-update-server)
+   - 5.5 [Bước 4: Kiểm chứng trên điện thoại](#55-bước-4-kiểm-chứng-kết-quả-trên-điện-thoại-android)
+   - 5.6 [Quy trình xuất bản build APK mới khi có thay đổi Native/Cấu hình](#56-quy-trình-xuất-bản-build-apk-mới-khi-có-thay-đổi-native-hoặc-cấu-hình)
 6. [Quy trình kiểm thử trên nền tảng iOS](#6-quy-trình-kiểm-thử-trên-nền-tảng-ios)
 7. [Rollback và quản lý bản vá khẩn cấp](#7-rollback-và-quản-lý-bản-vá-khẩn-cấp)
 8. [Chính sách App Store & Google Play](#8-chính-sách-app-store--google-play)
@@ -143,7 +149,9 @@ EAS Update Server là hệ thống máy chủ biên (CDN) phân tán toàn cầu
 
 ### 2.5 Chiến lược nạp bản vá (Cold Start vs Manual Trigger)
 
-1. **Cold Start (Tự động):** Khi người dùng tắt hẳn app và mở lại, `expo-updates` tự động kiểm tra server. Nếu có bản mới, nó tải ngầm về disk. Lần mở tiếp theo bản vá sẽ được kích hoạt (hoặc kích hoạt ngay nếu tải xong trước timeout khởi động).
+1. **Cold Start (Tự động):**
+   - Mặc định, khi mở app lên lần 1, app ưu tiên nạp bản cũ từ cache để người dùng không phải đợi, đồng thời tải ngầm bản mới về máy. Đến lần mở thứ 2 bản mới mới được kích hoạt.
+   - **Tối ưu với `fallbackToCacheTimeout: 5000`:** Dự án đã cấu hình Splash Screen đợi tối đa **5 giây (5000ms)** khi khởi động: Nếu mạng tải kịp bản vá mới trong 5s này, **bản mới sẽ được nạp ngay lập tức ở Lần mở đầu tiên** mà không cần người dùng phải thoát ra mở lại! Nếu quá 5s hoặc mất mạng, app mới mở bản cũ trong máy.
 2. **Manual Trigger (Chủ động):** Lập trình viên gọi hàm `Updates.checkForUpdateAsync()` và `Updates.fetchUpdateAsync()`, sau đó gọi `Updates.reloadAsync()` để làm mới ứng dụng ngay tại thời điểm người dùng đang sử dụng (Dự án đã tích hợp sẵn luồng này tại màn hình Settings).
 
 ---
@@ -166,7 +174,8 @@ Mã nguồn `base-react-native` hiện tại đã được cấu hình sẵn to�
       }
     },
     "updates": {
-      "url": "https://u.expo.dev/f6a397db-d5b1-41be-9dfd-4cf1e6a998f2"
+      "url": "https://u.expo.dev/f6a397db-d5b1-41be-9dfd-4cf1e6a998f2",
+      "fallbackToCacheTimeout": 5000
     }
   }
   ```
@@ -261,14 +270,52 @@ Dưới đây là kịch bản chuẩn từ lúc đóng gói ứng dụng ban đ
 > [!NOTE]
 > Bước này chỉ thực hiện 1 lần duy nhất để cài bản app ban đầu (Bản V1) lên thiết bị.
 
-1. Chạy lệnh build file APK preview trên đám mây của Expo:
-   ```powershell
-   npx eas-cli build --platform android --profile preview
-   ```
-   *(Trên Windows, lệnh này không đòi hỏi cài Android SDK hay JDK trên máy, máy chủ Expo sẽ tự đóng gói).*
-2. Khi tiến trình hoàn tất, terminal sẽ hiển thị **đường dẫn tải file `.apk`** (hoặc quét mã QR trên màn hình).
-3. Tải file `.apk` về điện thoại Android và tiến hành cài đặt.
-4. Mở ứng dụng lên để xác nhận ứng dụng chạy bình thường (Giao diện ban đầu - Bản V1).
+#### A. Lệnh build ứng dụng
+Chạy lệnh build file APK preview trên đám mây của Expo:
+```powershell
+npx eas-cli build --platform android --profile preview
+```
+*(Trên Windows, lệnh này không đòi hỏi cài Android SDK hay JDK trên máy, máy chủ Expo sẽ tự đóng gói).*
+
+#### B. Cơ chế tự động của lệnh Build đối với Channel và Branch
+Khi bạn chạy lệnh trên lần đầu tiên:
+1. EAS đọc file `eas.json` và thấy profile `preview` có cấu hình `"channel": "preview"`.
+2. EAS kiểm tra trên dự án: Nếu Channel `preview` **chưa tồn tại**, EAS sẽ **tự động tạo Channel `preview`**.
+3. **Quy tắc bắt buộc:** Vì một Channel bắt buộc phải trỏ vào một Branch, nên EAS sẽ:
+   - **Tự động tạo luôn một Branch mới có cùng tên (`preview`)**.
+   - Thiết lập liên kết: **Channel `preview` ➔ Branch `preview`**.
+4. Bản APK xuất ra sẽ được gắn cứng việc lắng nghe Channel `preview`.
+
+#### C. Cách tự thiết lập Channel và trỏ vào Branch có sẵn (Tránh sinh branch mới)
+Nếu bạn đã có sẵn một branch (ví dụ: `test-preview` từng dùng để test trên Expo Go) và muốn bản build nghe channel `preview` nhưng **trỏ thẳng vào `test-preview`** chứ không sinh thêm branch `preview`:
+
+* **Cách 1: Tạo trước Channel trước khi chạy Build (Chủ động hoàn toàn):**
+  Trước khi gõ lệnh build, bạn chạy lệnh tạo channel này trước:
+  ```powershell
+  npx eas-cli channel:create preview --branch test-preview
+  ```
+  Sau đó mới chạy lệnh build:
+  ```powershell
+  npx eas-cli build --platform android --profile preview
+  ```
+  *(Lúc này EAS thấy Channel `preview` đã có sẵn và đang trỏ vào `test-preview`, nó sẽ dùng luôn cấu hình này mà **không bao giờ sinh thêm branch `preview` nữa**).*
+
+* **Cách 2: Đổi hướng Channel sau khi đã lỡ Build (Không cần build lại APK):**
+  Nếu bạn đã lỡ chạy lệnh build và EAS đã tự sinh ra branch `preview`, bạn có thể đổi Channel `preview` trỏ sang `test-preview` bất cứ lúc nào:
+  - **Bằng dòng lệnh:**
+    ```powershell
+    npx eas-cli channel:edit preview --branch test-preview
+    ```
+  - **Bằng giao diện Web `expo.dev`:**
+    1. Đăng nhập [expo.dev](https://expo.dev) ➔ Chọn dự án ➔ Vào mục **Channels**.
+    2. Bấm vào Channel `preview` (hoặc biểu tượng 3 chấm `...` / Edit).
+    3. Tại mục **Point to branch**, chọn chuyển sang **`test-preview`** ➔ Nhấn **Save**.
+    *(Ngay lập tức, mọi máy cài APK preview sẽ tự động nạp code từ branch `test-preview` mà không cần build lại file APK).*
+
+#### D. Cài đặt và kiểm tra bản V1
+1. Khi tiến trình build hoàn tất, terminal sẽ hiển thị **đường dẫn tải file `.apk`** (hoặc quét mã QR trên màn hình).
+2. Tải file `.apk` về điện thoại Android và tiến hành cài đặt.
+3. Mở ứng dụng lên để xác nhận ứng dụng chạy bình thường (Giao diện ban đầu - Bản V1).
 
 ### 5.2 Bước 1: Sửa đổi mã nguồn (Fix bug / Giả lập bản vá)
 
@@ -312,9 +359,39 @@ Cầm chiếc điện thoại Android đã cài đặt Bản V1 ở Bước 0:
   3. Ứng dụng sẽ kiểm tra máy chủ EAS, báo trạng thái phát hiện bản vá mới và hiển thị nút **"Cập nhật ngay"**.
   4. Nhấn **"Cập nhật ngay"**, ứng dụng tự khởi động lại và dòng chữ `"ĐÃ CẬP NHẬT OTA THÀNH CÔNG!"` sẽ xuất hiện ngay lập tức!
 * **Cách 2: Cập nhật tự động khi khởi động (Cold Start)**
-  1. Vuốt tắt hẳn ứng dụng (Kill app trong danh sách đa nhiệm).
-  2. Mở lại ứng dụng: `expo-updates` sẽ tự động tải bundle mới trong nền.
-  3. Tắt app và mở lại lần thứ hai: Ứng dụng sẽ nạp trực tiếp giao diện mới.
+  - **Với bản build đã có `fallbackToCacheTimeout: 5000`:** Bạn chỉ cần vuốt tắt hẳn app (kill app) và mở lại **ĐÚNG 1 LẦN DUY NHẤT**. Màn hình Splash sẽ dừng chờ 1–2 giây để tải bản vá và giao diện mới sẽ xuất hiện ngay lập tức!
+  - **Với bản build cũ (`0ms`):** Mở lần 1 để app tải ngầm bản vá về bộ nhớ, sau đó tắt app mở lại lần 2 để kích hoạt.
+
+### 5.6 Quy trình xuất bản build APK mới (Khi có thay đổi Native hoặc cấu hình)
+
+Khi bạn có những thay đổi liên quan đến tầng Native (như vừa cấu hình `fallbackToCacheTimeout: 5000` trong `app.json` và `AndroidManifest.xml`, hoặc cài thêm thư viện Native mới), bản cập nhật OTA không thể mang theo những thay đổi này. Bạn cần **xuất bản một bản build APK mới**:
+
+#### Bước 1: Commit các thay đổi mã nguồn
+Commit toàn bộ thay đổi cấu hình vào Git để EAS đóng gói đúng phiên bản mới nhất:
+```powershell
+git add .
+git commit -m "Cau hinh fallbackToCacheTimeout 5s cho OTA update"
+```
+
+#### Bước 2: Chạy lệnh đóng gói trên EAS Cloud
+Chạy lệnh biên dịch cho nền tảng Android với profile `preview`:
+```powershell
+npx eas-cli build --platform android --profile preview
+```
+
+**Tiến trình diễn ra:**
+1. Mã nguồn được nén và đẩy lên máy chủ đám mây của Expo.
+2. EAS tự động biên dịch, gắn các cấu hình native (`EXPO_UPDATES_LAUNCH_WAIT_MS = 5000`, icon, permissions...) vào file APK.
+3. Khi hoàn tất (khoảng 5–10 phút), terminal sẽ cung cấp **đường dẫn tải file `.apk`** kèm **mã QR**.
+
+#### Bước 3: Cài đặt bản APK mới lên điện thoại
+1. Dùng điện thoại quét mã QR hoặc mở link tải file `.apk` mới về máy.
+2. Tiến hành cài đặt (bản mới sẽ cài đè lên bản cũ).
+
+#### Bước 4: Kiểm chứng lợi ích của bản build mới
+Từ bản build này trở đi:
+- Mỗi khi bạn sửa code JS và chạy `npx eas-cli update --channel preview --message "..."`.
+- Bạn không cần bấm nút trong Settings và cũng **không cần thoát mở app 2 lần** nữa: Chỉ cần kill app và mở lại 1 lần, màn hình Splash Screen sẽ tự động dừng chờ 1–2 giây để tải bản mới và đưa bạn vào giao diện đã fix bug ngay lập tức!
 
 ---
 
