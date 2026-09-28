@@ -6,12 +6,9 @@ import { Button } from "@/components/Button"
 import { PressableIcon } from "@/components/Icon"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
-import { useViewModel } from "@/di/useViewModel"
 import type { MainTabScreenProps } from "@/navigators/navigationTypes"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
-
-import { HomeViewModel } from "./HomeViewModel"
 
 /**
  * The app's one example tab — replace with real screens. Shows the
@@ -22,7 +19,6 @@ import { HomeViewModel } from "./HomeViewModel"
  */
 export const HomeScreen = observer(function HomeScreen() {
   const { themed } = useAppTheme()
-  const viewModel = useViewModel(HomeViewModel)
   const navigation = useNavigation<MainTabScreenProps<"Home">["navigation"]>()
 
   return (
@@ -34,10 +30,6 @@ export const HomeScreen = observer(function HomeScreen() {
 
       <View style={themed($body)}>
         <Text tx="homeScreen:subtitle" style={themed($subtitle)} />
-        <Text text={String(viewModel.count)} preset="heading" style={themed($count)} />
-        <Button tx="homeScreen:incrementButton" onPress={viewModel.increment} />
-
-        <View style={themed($divider)} />
         <Button
           tx="homeScreen:openTodoListButton"
           onPress={() => navigation.navigate("TodoList")}
@@ -73,14 +65,6 @@ const $subtitle: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
   marginBottom: spacing.lg,
   color: colors.textDim,
   textAlign: "center",
-})
-
-const $count: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $divider: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  height: spacing.xl,
 })
 
 const $demoButton: ThemedStyle<ViewStyle> = () => ({
