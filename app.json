@@ -2,12 +2,12 @@
   "name": "BaseApp",
   "slug": "base-react-native",
   "scheme": "baseapp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "orientation": "portrait",
   "userInterfaceStyle": "automatic",
   "backgroundColor": "#182029",
   "icon": "./assets/images/app-icon-all.png",
-  "runtimeVersion": "1.0.0",
+  "runtimeVersion": "1.1.0",
   "assetBundlePatterns": [
     "**/*"
   ],
@@ -78,7 +78,13 @@
       }
     ],
     "@react-native-firebase/crashlytics",
-    "./plugins/withIosModularHeaders.js"
+    "./plugins/withIosModularHeaders.js",
+    [
+      "expo-camera",
+      {
+        "cameraPermission": "Cho phép BaseApp truy cập máy ảnh để chụp ảnh và quét mã."
+      }
+    ]
   ],
   "experiments": {
     "tsconfigPaths": true
