@@ -7,7 +7,9 @@
   "userInterfaceStyle": "automatic",
   "backgroundColor": "#182029",
   "icon": "./assets/images/app-icon-all.png",
-  "runtimeVersion": "1.0.0",
+  "runtimeVersion": {
+    "policy": "fingerprint"
+  },
   "assetBundlePatterns": [
     "**/*"
   ],
