@@ -192,7 +192,10 @@ Mã nguồn `base-react-native` hiện tại đã được cấu hình sẵn to�
 * **`app.json`**:
   ```json
   {
-    "runtimeVersion": "1.0.0",
+    "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "owner": "qlpersy32s-team",
     "extra": {
       "eas": {
