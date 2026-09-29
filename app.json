@@ -2,16 +2,17 @@
   "name": "BaseApp",
   "slug": "base-react-native",
   "scheme": "baseapp",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "orientation": "portrait",
   "userInterfaceStyle": "automatic",
   "backgroundColor": "#182029",
   "icon": "./assets/images/app-icon-all.png",
-  "runtimeVersion": "1.1.0",
+  "runtimeVersion": "1.2.0",
   "assetBundlePatterns": [
     "**/*"
   ],
   "android": {
+    "versionCode": 2,
     "icon": "./assets/images/app-icon-android-legacy.png",
     "package": "com.baseapp",
     "backgroundColor": "#182029",
@@ -99,7 +100,7 @@
   },
   "owner": "qlpersy32s-team",
   "updates": {
-    "url": "https://u.expo.dev/f6a397db-d5b1-41be-9dfd-4cf1e6a998f2",
+    "url": "https://distant-wrist-subcommittee-democracy.trycloudflare.com/api/manifest",
     "fallbackToCacheTimeout": 5000
   }
 }

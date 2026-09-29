@@ -51,7 +51,13 @@ const appBootTime = Date.now()
 const MIN_SPLASH_DISPLAY_TIME_MS = 1500
 
 // Web linking configuration
-const prefix = Linking.createURL("/")
+const prefix = (() => {
+  try {
+    return Linking.createURL("/", { scheme: "baseapp" })
+  } catch {
+    return "baseapp://"
+  }
+})()
 const config = {
   screens: {
     Splash: "splash",
