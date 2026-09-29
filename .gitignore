@@ -27,3 +27,4 @@ ios/DerivedData/
 *.tsbuildinfo
 
 scratch/
+keys/

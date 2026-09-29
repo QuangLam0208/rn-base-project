@@ -60,3 +60,40 @@ export async function downloadAndApplyUpdate(): Promise<void> {
   await Updates.fetchUpdateAsync()
   await Updates.reloadAsync()
 }
+
+export interface NativeUpdateInfo {
+  hasUpdate: boolean
+  forceUpdate?: boolean
+  versionName?: string
+  versionCode?: number
+  runtimeVersion?: string
+  releaseNotes?: string
+  downloadUrl?: string
+  sha256?: string
+  fileSize?: number
+}
+
+/**
+ * Checks the custom OTA/Distribution server for a newer native APK build.
+ * If a native release exists with a versionCode higher than current build,
+ * returns update info including downloadUrl and SHA-256 checksum.
+ */
+export async function checkNativeAppUpdate(
+  serverUrl = "http://localhost:3000"
+): Promise<NativeUpdateInfo | null> {
+  try {
+    const versionCode = Updates.runtimeVersion || "1"
+    const res = await fetch(`${serverUrl}/api/native/check?platform=android&versionCode=${encodeURIComponent(versionCode)}`)
+    if (!res.ok) {
+      logger.d(TAG, `checkNativeAppUpdate response status: ${res.status}`)
+      return null
+    }
+
+    const data = (await res.json()) as NativeUpdateInfo
+    return data
+  } catch (error) {
+    logger.e(TAG, "checkNativeAppUpdate failed", error)
+    return null
+  }
+}
+

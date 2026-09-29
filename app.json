@@ -99,7 +99,12 @@
   },
   "owner": "qlpersy32s-team",
   "updates": {
-    "url": "https://u.expo.dev/f6a397db-d5b1-41be-9dfd-4cf1e6a998f2",
-    "fallbackToCacheTimeout": 5000
+    "url": "http://localhost:3000/api/manifest",
+    "fallbackToCacheTimeout": 5000,
+    "codeSigningCertificate": "./certs/certificate.pem",
+    "codeSigningMetadata": {
+      "keyid": "main",
+      "alg": "rsa-v1_5-sha256"
+    }
   }
 }
