@@ -41,7 +41,7 @@ export function MainTabNavigator() {
         options={{
           tabBarLabel: translate("mainNavigator:homeTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="menu" color={focused ? colors.tint : colors.tintInactive} size={28} />
+            <Icon icon="home" color={focused ? colors.tint : colors.tintInactive} size={28} />
           ),
         }}
       />

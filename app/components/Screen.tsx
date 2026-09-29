@@ -15,6 +15,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 
 import { useAppTheme } from "@/theme/context"
 import { $styles } from "@/theme/styles"
+import { isExpoGo } from "@/utils/IsExpoGo"
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "@/utils/useSafeAreaInsetsStyle"
 
 export const DEFAULT_BOTTOM_OFFSET = 50
@@ -261,10 +262,12 @@ export function Screen(props: ScreenProps) {
         $containerInsets,
       ]}
     >
-      <SystemBars
-        style={systemBarStyle || (themeContext === "dark" ? "light" : "dark")}
-        {...SystemBarsProps}
-      />
+      {!isExpoGo && (
+        <SystemBars
+          style={systemBarStyle || (themeContext === "dark" ? "light" : "dark")}
+          {...SystemBarsProps}
+        />
+      )}
 
       <KeyboardAvoidingView
         behavior={isIos ? "padding" : "height"}

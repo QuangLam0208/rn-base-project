@@ -10,10 +10,10 @@
  * The app navigation resides in ./app/navigators, so head over there
  * if you're interested in adding screens and navigators.
  */
-if (__DEV__) {
-  // Load Reactotron in development only.
-  // Note that you must be using metro's `inlineRequires` for this to work.
-  // If you turn it off in metro.config.js, you'll have to manually import it.
+import { isExpoGo } from "./utils/IsExpoGo"
+
+if (__DEV__ && !isExpoGo) {
+  // Load Reactotron in development only (skip in Expo Go).
   require("./devtools/ReactotronConfig.ts")
 }
 import "./utils/gestureHandler"
@@ -51,7 +51,13 @@ const appBootTime = Date.now()
 const MIN_SPLASH_DISPLAY_TIME_MS = 1500
 
 // Web linking configuration
-const prefix = Linking.createURL("/")
+const prefix = (() => {
+  try {
+    return Linking.createURL("/", { scheme: "baseapp" })
+  } catch {
+    return "baseapp://"
+  }
+})()
 const config = {
   screens: {
     Splash: "splash",
@@ -120,6 +126,7 @@ export function App() {
       }, remaining)
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [isReady])
 
   // Before we show the app, we have to wait for our state to be ready.

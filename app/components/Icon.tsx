@@ -122,6 +122,7 @@ export const iconRegistry = {
   github: require("@assets/icons/demo/github.png"), // @demo remove-current-line
   heart: require("@assets/icons/demo/heart.png"), // @demo remove-current-line
   hidden: require("@assets/icons/hidden.png"),
+  home: require("@assets/icons/home.png"),
   ladybug: require("@assets/icons/ladybug.png"),
   lock: require("@assets/icons/lock.png"),
   menu: require("@assets/icons/menu.png"),
