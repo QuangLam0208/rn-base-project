@@ -100,7 +100,7 @@
   },
   "owner": "qlpersy32s-team",
   "updates": {
-    "url": "https://distant-wrist-subcommittee-democracy.trycloudflare.com/api/manifest",
+    "url": "http://172.20.10.2:3001/api/manifest",
     "fallbackToCacheTimeout": 5000
   }
 }
