@@ -2,12 +2,23 @@
   "name": "BaseApp",
   "slug": "base-react-native",
   "scheme": "baseapp",
-  "version": "1.2.0",
+  "version": "1.0.0",
   "orientation": "portrait",
   "userInterfaceStyle": "automatic",
   "backgroundColor": "#182029",
   "icon": "./assets/images/app-icon-all.png",
-  "runtimeVersion": "1.2.0",
+  "runtimeVersion": {
+    "policy": "appVersion"
+  },
+  "updates": {
+    "url": "http://172.20.10.2:3001/api/manifest",
+    "fallbackToCacheTimeout": 5000,
+    "codeSigningCertificate": "./keys/certificate.pem",
+    "codeSigningMetadata": {
+      "keyid": "main",
+      "alg": "rsa-v1_5-sha256"
+    }
+  },
   "assetBundlePatterns": [
     "**/*"
   ],
@@ -68,7 +79,18 @@
         }
       }
     ],
-    "expo-build-properties",
+    [
+      "expo-build-properties",
+      {
+        "android": {
+          "newArchEnabled": true,
+          "usesCleartextTraffic": true
+        },
+        "ios": {
+          "newArchEnabled": true
+        }
+      }
+    ],
     "expo-sqlite",
     [
       "@react-native-firebase/app",
@@ -98,9 +120,5 @@
       "projectId": "f6a397db-d5b1-41be-9dfd-4cf1e6a998f2"
     }
   },
-  "owner": "qlpersy32s-team",
-  "updates": {
-    "url": "http://172.20.10.2:3001/api/manifest",
-    "fallbackToCacheTimeout": 5000
-  }
+  "owner": "qlpersy32s-team"
 }

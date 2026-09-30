@@ -14,12 +14,14 @@
     </intent>
   </queries>
   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true" android:enableOnBackInvokedCallback="false" android:usesCleartextTraffic="true">
+    <meta-data android:name="expo.modules.updates.CODE_SIGNING_CERTIFICATE" android:value="-----BEGIN CERTIFICATE-----&#xD;&#xA;MIIDSTCCAjGgAwIBAgIUOKNMzbza6NW1Eqb5LIP3nDcAvBMwDQYJKoZIhvcNAQEL&#xD;&#xA;BQAwIzEhMB8GA1UEAwwYQmFzZUFwcCBPVEEgQ29kZSBTaWduaW5nMB4XDTI2MDkz&#xD;&#xA;MDE4MDUxMVoXDTM2MDkyNzE4MDUxMVowIzEhMB8GA1UEAwwYQmFzZUFwcCBPVEEg&#xD;&#xA;Q29kZSBTaWduaW5nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0fnm&#xD;&#xA;bgmhTIiYgYmjsG5u7YLJEt36GUoJ1ozc2d0gYUf1p0Qo0vPqr8+a/1T4PDzjJ31L&#xD;&#xA;bJ3qHrErLkufv3HwkZ+it7pShAZ7Cc68Dq9kyCLLP4h/r9qvlLUqnAEoEgcKh/mV&#xD;&#xA;Sv0jSN93F6ShmMGyFcrT1Dhl6OqwJZidlqOqXOSMAEYk+6KJyodFuwEgVPALLBU7&#xD;&#xA;6kejiV4WUwMsq+akmLH0E4XQRhLJUDecNNLU+RDpoSY9QC88+dGSfbZ0GwwurLm4&#xD;&#xA;hEt5C5PltIrYAny+d6WiNVk7vSpDElK70905vQBRDrJNg+9Xavq07z5Rr+fhVdEI&#xD;&#xA;JWxuFuoOLm23vT/TuwIDAQABo3UwczAdBgNVHQ4EFgQUJ2Vwylih2NnliDduX91U&#xD;&#xA;r3johoUwHwYDVR0jBBgwFoAUJ2Vwylih2NnliDduX91Ur3johoUwDwYDVR0TAQH/&#xD;&#xA;BAUwAwEB/zALBgNVHQ8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwDQYJKoZI&#xD;&#xA;hvcNAQELBQADggEBAD2LNT+M9s1Oxodh/srgJkr+Ruj6mX6F+m+JTcSKXaa8oRXD&#xD;&#xA;hYoHKbdslrMVy+MauFUyoRTdgfplPknWiv/YqleRt0PfyLyzYbNBO4+PeAFeIvl9&#xD;&#xA;L30AMXLFTIkaq/NyGVIfeLRN2dMYdlaEJ7Kag3YlbV6an0zPNkbz3nBc9umb0wwJ&#xD;&#xA;ibu0aJjjOYrKC1oTMyeebqFJJQUKjr054IGOhcUk5AomfTjXCczMC53BO8a5f761&#xD;&#xA;lz0TqpuJZQyv1Wb/Cp248/UGioMdze35u7K1YrXG/wMn7jznLWLP2Oy3c4bjavfM&#xD;&#xA;qZftCfa2poB6E84OZrqZV/VV2rLRZlfARfpXGH4=&#xD;&#xA;-----END CERTIFICATE-----&#xD;&#xA;"/>
+    <meta-data android:name="expo.modules.updates.CODE_SIGNING_METADATA" android:value="{&quot;keyid&quot;:&quot;main&quot;,&quot;alg&quot;:&quot;rsa-v1_5-sha256&quot;}"/>
     <meta-data android:name="expo.modules.updates.ENABLED" android:value="true"/>
     <meta-data android:name="expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT" android:value="true"/>
-    <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="${EXPO_RUNTIME_VERSION}"/>
+    <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="@string/expo_runtime_version"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="5000"/>
-    <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="${EXPO_UPDATE_URL}"/>
+    <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="http://172.20.10.2:3001/api/manifest"/>
     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize|assetsPaths|locale|layoutDirection" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true" android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
