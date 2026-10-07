@@ -86,6 +86,21 @@ importers:
       mobx-react-lite:
         specifier: ^5.0.3
         version: 5.0.3(mobx@7.0.3)(react@19.2.3)
+      native-alert:
+        specifier: github:QuangLam0208/native-module#172c1617db15db1e478f43c5c37845bddc9de0ce&path:/native-alert
+        version: https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-alert(expo@57.0.25)
+      native-date-picker:
+        specifier: github:QuangLam0208/native-module#172c1617db15db1e478f43c5c37845bddc9de0ce&path:/native-date-picker
+        version: https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-date-picker(expo@57.0.25)
+      native-device-helper:
+        specifier: github:QuangLam0208/native-module#172c1617db15db1e478f43c5c37845bddc9de0ce&path:/native-device-helper
+        version: https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-device-helper(expo@57.0.25)
+      native-network-status:
+        specifier: github:QuangLam0208/native-module#172c1617db15db1e478f43c5c37845bddc9de0ce&path:/native-network-status
+        version: https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-network-status(expo@57.0.25)
+      native-toast:
+        specifier: github:QuangLam0208/native-module#172c1617db15db1e478f43c5c37845bddc9de0ce&path:/native-toast
+        version: https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-toast(expo@57.0.25)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -98,9 +113,6 @@ importers:
       react-native:
         specifier: 0.86.3
         version: 0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.87.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1)
-      react-native-device-helper:
-        specifier: github:QuangLam0208/react-native-device-helper
-        version: https://codeload.github.com/QuangLam0208/react-native-device-helper/tar.gz/774aa516063c9450defd046153460bf8bdc9a3bc(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.87.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)
       react-native-drawer-layout:
         specifier: ^4.0.1
         version: 4.2.10(2c8475a7316a3e6fe50207a9127af299)
@@ -4637,6 +4649,36 @@ packages:
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
     hasBin: true
 
+  native-alert@https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-alert:
+    resolution: {gitHosted: true, integrity: sha512-hveJwRZYbmqUqjGmP627+RCOITiBsXDPWxZYOYGu0je0LYbqyqINsUMSmHFR8AV3sZIF+MKdRkWiN/IXuzODLA==, path: /native-alert, tarball: https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce}
+    version: 1.0.0
+    peerDependencies:
+      expo: '*'
+
+  native-date-picker@https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-date-picker:
+    resolution: {gitHosted: true, integrity: sha512-hveJwRZYbmqUqjGmP627+RCOITiBsXDPWxZYOYGu0je0LYbqyqINsUMSmHFR8AV3sZIF+MKdRkWiN/IXuzODLA==, path: /native-date-picker, tarball: https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce}
+    version: 1.0.0
+    peerDependencies:
+      expo: '*'
+
+  native-device-helper@https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-device-helper:
+    resolution: {gitHosted: true, integrity: sha512-hveJwRZYbmqUqjGmP627+RCOITiBsXDPWxZYOYGu0je0LYbqyqINsUMSmHFR8AV3sZIF+MKdRkWiN/IXuzODLA==, path: /native-device-helper, tarball: https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce}
+    version: 1.0.0
+    peerDependencies:
+      expo: '*'
+
+  native-network-status@https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-network-status:
+    resolution: {gitHosted: true, integrity: sha512-hveJwRZYbmqUqjGmP627+RCOITiBsXDPWxZYOYGu0je0LYbqyqINsUMSmHFR8AV3sZIF+MKdRkWiN/IXuzODLA==, path: /native-network-status, tarball: https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce}
+    version: 1.0.0
+    peerDependencies:
+      expo: '*'
+
+  native-toast@https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-toast:
+    resolution: {gitHosted: true, integrity: sha512-hveJwRZYbmqUqjGmP627+RCOITiBsXDPWxZYOYGu0je0LYbqyqINsUMSmHFR8AV3sZIF+MKdRkWiN/IXuzODLA==, path: /native-toast, tarball: https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce}
+    version: 1.0.0
+    peerDependencies:
+      expo: '*'
+
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
@@ -5011,13 +5053,6 @@ packages:
 
   react-is@19.3.0:
     resolution: {integrity: sha512-UpMYezM4v5/18F28aC66AEsjXIgE02kyEMH6yLdgLXu/UTfa1Ntwck/nNLrbqJsEXW7gPb0coNO9FQse9WTovA==}
-
-  react-native-device-helper@https://codeload.github.com/QuangLam0208/react-native-device-helper/tar.gz/774aa516063c9450defd046153460bf8bdc9a3bc:
-    resolution: {gitHosted: true, integrity: sha512-R66dqsOtB2mwhQzihxKV6x1FH/fPb5Q+EqpgcErDz3hVspfpNDJjfRKM6165kk/0vVsyB4i0zVojrivk4jhsYQ==, tarball: https://codeload.github.com/QuangLam0208/react-native-device-helper/tar.gz/774aa516063c9450defd046153460bf8bdc9a3bc}
-    version: 0.1.0
-    peerDependencies:
-      react: '*'
-      react-native: '*'
 
   react-native-drawer-layout@4.2.10:
     resolution: {integrity: sha512-O6TQdZ5LSm3dqnuR4rX9KPtE+9dVg7jsezEYz1l01rkQTe4fQvYZIoPu2sZFl5X2N70uhRdjnPULySVR3sBUwA==}
@@ -11798,6 +11833,26 @@ snapshots:
 
   napi-postinstall@0.3.4: {}
 
+  native-alert@https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-alert(expo@57.0.25):
+    dependencies:
+      expo: 57.0.25(0582066bcca9b9d28652fe26b27de15b)
+
+  native-date-picker@https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-date-picker(expo@57.0.25):
+    dependencies:
+      expo: 57.0.25(0582066bcca9b9d28652fe26b27de15b)
+
+  native-device-helper@https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-device-helper(expo@57.0.25):
+    dependencies:
+      expo: 57.0.25(0582066bcca9b9d28652fe26b27de15b)
+
+  native-network-status@https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-network-status(expo@57.0.25):
+    dependencies:
+      expo: 57.0.25(0582066bcca9b9d28652fe26b27de15b)
+
+  native-toast@https://codeload.github.com/QuangLam0208/native-module/tar.gz/172c1617db15db1e478f43c5c37845bddc9de0ce#path:/native-toast(expo@57.0.25):
+    dependencies:
+      expo: 57.0.25(0582066bcca9b9d28652fe26b27de15b)
+
   natural-compare@1.4.0: {}
 
   negotiator@0.6.3: {}
@@ -12159,11 +12214,6 @@ snapshots:
   react-is@18.3.1: {}
 
   react-is@19.3.0: {}
-
-  react-native-device-helper@https://codeload.github.com/QuangLam0208/react-native-device-helper/tar.gz/774aa516063c9450defd046153460bf8bdc9a3bc(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.87.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3):
-    dependencies:
-      react: 19.2.3
-      react-native: 0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.87.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1)
 
   react-native-drawer-layout@4.2.10(2c8475a7316a3e6fe50207a9127af299):
     dependencies:
