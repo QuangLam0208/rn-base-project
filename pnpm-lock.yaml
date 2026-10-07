@@ -99,8 +99,8 @@ importers:
         specifier: 0.86.3
         version: 0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.87.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1)
       react-native-device-helper:
-        specifier: file:../native-module/react-native-device-helper
-        version: file:../native-module/react-native-device-helper(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.87.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)
+        specifier: github:QuangLam0208/react-native-device-helper
+        version: https://codeload.github.com/QuangLam0208/react-native-device-helper/tar.gz/774aa516063c9450defd046153460bf8bdc9a3bc(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.87.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)
       react-native-drawer-layout:
         specifier: ^4.0.1
         version: 4.2.10(2c8475a7316a3e6fe50207a9127af299)
@@ -5012,8 +5012,9 @@ packages:
   react-is@19.3.0:
     resolution: {integrity: sha512-UpMYezM4v5/18F28aC66AEsjXIgE02kyEMH6yLdgLXu/UTfa1Ntwck/nNLrbqJsEXW7gPb0coNO9FQse9WTovA==}
 
-  react-native-device-helper@file:../native-module/react-native-device-helper:
-    resolution: {directory: ../native-module/react-native-device-helper, type: directory}
+  react-native-device-helper@https://codeload.github.com/QuangLam0208/react-native-device-helper/tar.gz/774aa516063c9450defd046153460bf8bdc9a3bc:
+    resolution: {gitHosted: true, integrity: sha512-R66dqsOtB2mwhQzihxKV6x1FH/fPb5Q+EqpgcErDz3hVspfpNDJjfRKM6165kk/0vVsyB4i0zVojrivk4jhsYQ==, tarball: https://codeload.github.com/QuangLam0208/react-native-device-helper/tar.gz/774aa516063c9450defd046153460bf8bdc9a3bc}
+    version: 0.1.0
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -12159,7 +12160,7 @@ snapshots:
 
   react-is@19.3.0: {}
 
-  react-native-device-helper@file:../native-module/react-native-device-helper(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.87.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3):
+  react-native-device-helper@https://codeload.github.com/QuangLam0208/react-native-device-helper/tar.gz/774aa516063c9450defd046153460bf8bdc9a3bc(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.87.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3):
     dependencies:
       react: 19.2.3
       react-native: 0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.87.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1)

@@ -1,140 +1,76 @@
-# XÂY DỰNG & TÁI SỬ DỤNG NATIVE MODULE TRONG REACT NATIVE
-> **Dành cho:** Lập trình viên mới bắt đầu, đội ngũ phát triển React Native muốn chuẩn hóa kiến trúc thư viện dùng chung cho nhiều ứng dụng.  
-> **Áp dụng cho:** Cả kiến trúc truyền thống (Bare React Native) lẫn hệ sinh thái Expo hiện đại (Prebuild / EAS).
+# PHÁT TRIỂN & PHÂN PHỐI REUSABLE NATIVE MODULE TRONG REACT NATIVE
 
 ---
 
 ## MỤC LỤC
-1. [Bản Chất Kiến Trúc & Vì Sao Phải Tách Thư Viện Riêng](#1-bản-chất-kiến-trúc--vì-sao-phải-tách-thư-viện-riêng)
-2. [Bước 1: Khởi Tạo Bộ Khung Thư Viện Bằng Tool Chuẩn](#2-bước-1-khởi-tạo-bộ-khung-thư-viện-bằng-tool-chuẩn)
-3. [Bước 2: Viết Mã Nguồn Native Phía Android (Java)](#3-bước-2-viết-mã-nguồn-native-phía-android-java)
-4. [Bước 3: Viết Tầng TypeScript Wrapper (Interface)](#4-bước-3-viết-tầng-typescript-wrapper-interface)
-5. [Bước 4: Chạy Thử Nghiệm Ngay Trên App Mẫu (example)](#5-bước-4-chạy-thử-nghiệm-ngay-trên-app-mẫu-example)
-6. [Bước 5: Phân Phối Thư Viện Để Tái Sử Dụng Cho Nhiều App](#6-bước-5-phân-phối-thư-viện-để-tái-sử-dụng-cho-nhiều-app)
-7. [Bước 6: Cài Đặt Và Sử Dụng Trong Ứng Dụng Con](#7-bước-6-cài-đặt-và-sử-dụng-trong-ứng-dụng-con)
-8. [Các Lỗi Kinh Điển Thường Gặp & Cách Khắc Phục](#8-các-lỗi-kinh-điển-thường-gặp--cách-khắc-phục)
-9. [Các Giá Trị Cốt Lõi Khi Bảo Vệ Thiết Kế Với Lead](#9-các-giá-trị-cốt-lõi-khi-bảo-vệ-thiết-kế-với-lead)
+1. [Quy Trình Triển Khai](#1-quy-trình-triển-khai)
+   * [Giai đoạn 1: Khởi tạo Scaffold Thư viện Chuẩn](#giai-đoạn-1-khởi-tạo-scaffold-thư-viện-chuẩn)
+   * [Giai đoạn 2: Hiện thực hóa Tầng Native (Android Java/Kotlin)](#giai-đoạn-2-hiện-thực-hóa-tầng-native-android-javakotlin)
+   * [Giai đoạn 3: Hiện thực hóa Tầng Type-Safe Wrapper (TypeScript)](#giai-đoạn-3-hiện-thực-hóa-tầng-type-safe-wrapper-typescript)
+   * [Giai đoạn 4: Kiểm thử Cục bộ](#giai-đoạn-4-kiểm-thử-cục-bộ)
+   * [Giai đoạn 5: Đóng gói & Phân phối qua Git Repository](#giai-đoạn-5-đóng-gói--phân-phối-qua-git-repository)
+   * [Đầu ra bắt buộc của Quy trình Triển khai](#đầu-ra-bắt-buộc-của-quy-trình-triển-khai-deliverables--artifacts)
+2. [Quy Trình Tích Hợp Vào Ứng Dụng Consumer](#2-quy-trình-tích-hợp-vào-ứng-dụng-consumer)
+   * [2.1. Phương pháp 1: Tích hợp qua Git Remote URL](#21-phương-pháp-1-tích-hợp-qua-git-remote-url-github--gitlab)
+   * [2.2. Phương pháp 2: Tích hợp qua Local File Path (Dev & Debug nhanh)](#22-phương-pháp-2-tích-hợp-qua-local-file-path-phù-hợp-dev--debug-nhanh)
+   * [2.3. Phương pháp 3: Tích hợp qua Monorepo Workspace](#23-phương-pháp-3-tích-hợp-qua-monorepo-workspace)
+   * [2.4. Phương pháp 4: Tích hợp qua Private NPM Registry](#24-phương-pháp-4-tích-hợp-qua-private-npm-registry)
+   * [2.5. Triển khai trong Tầng Giao Diện (UI Implementation)](#25-triển-khai-trong-tầng-giao-diện-ui-implementation)
+3. [Đặc Tả Kỹ Thuật & Quản Lý Rủi Ro](#3-đặc-tả-kỹ-thuật--quản-lý-rủi-ro)
 
 ---
+## 1. QUY TRÌNH TRIỂN KHAI
 
-## 1. BẢN CHẤT KIẾN TRÚC & VÌ SAO PHẢI TÁCH THƯ VIỆN RIÊNG
+### Giai đoạn 1: Khởi tạo Scaffold Thư viện Chuẩn
 
-### 1.1. Native Module là gì?
-Mã JavaScript (React Native) chạy trong một "hộp cát" (Sandbox của JS Engine như Hermes/V8), hoàn toàn không thể trực tiếp điều khiển phần cứng của điện thoại (RAM, Pin, Bluetooth, NFC, vân tay...). 
-
-**Native Module** là cầu nối (Bridge / JSI) cho phép JavaScript gửi chỉ thị xuống mã nguồn gốc của hệ điều hành (Java/Kotlin trên Android, Swift/Obj-C trên iOS) và nhận kết quả trả về.
-
-```mermaid
-flowchart LR
-    subgraph JS_Realm["Môi Trường JavaScript / React"]
-        TS["App Component / Service\n(TypeScript)"]
-    end
-
-    subgraph AutoLink["Cơ Chế Autolinking (Tự Động)"]
-        Registry["PackageList & Bridge / JSI"]
-    end
-
-    subgraph Native_Realm["Môi Trường Hệ Điều Hành (Native)"]
-        Android["Android (Java/Kotlin)\nActivityManager, BatteryManager..."]
-        iOS["iOS (Swift/Obj-C)\nUIDevice, CoreBluetooth..."]
-    end
-
-    TS <-->|Gọi hàm & Nhận kết quả| AutoLink
-    AutoLink <--> Android
-    AutoLink <--> iOS
-```
-
-### 1.2. Tại sao phải tách thành Thư viện riêng (NPM Package)?
-Nếu viết code Native trực tiếp vào thư mục `android/app/src/...` của app:
-* **Rủi ro mất trắng code:** Khi chạy `npx expo prebuild --clean`, thư mục `android/` sẽ bị xóa sạch và tạo lại từ đầu.
-* **Không thể tái sử dụng:** Công ty có 3 app (Khách hàng, Tài xế, Quản trị) thì phải copy-paste code Java sang 3 nơi, sửa bug phải sửa 3 lần.
-
-**Giải pháp chuẩn hóa:** Đóng gói Native Module thành **Thư viện độc lập**:
-* **An toàn tuyệt đối:** Nằm trong `node_modules`, dù có prebuild clean 1.000 lần thì hệ thống vẫn tự link lại.
-* **Dùng chung không giới hạn:** Các app con chỉ cần chạy `pnpm add <tên-thư-viện>` là dùng được ngay.
-* **Quản lý phiên bản (Versioning):** Nâng cấp tính năng độc lập bằng semantic versioning (`v1.0.0`, `v1.0.1`).
-
----
-
-## 2. BƯỚC 1: KHỞI TẠO BỘ KHUNG THƯ VIỆN BẰNG TOOL CHUẨN
-
-Cộng đồng React Native chính thức cung cấp công cụ `create-react-native-library` để tạo khung thư viện đầy đủ cả Android, iOS và TypeScript.
-
-### 2.1. Lệnh khởi tạo
-Mở Terminal ở thư mục bên ngoài các dự án app và chạy:
+Sử dụng bộ công cụ tiêu chuẩn cộng đồng `create-react-native-library` để thiết lập:
 
 ```bash
 npx create-react-native-library@latest react-native-device-helper
 ```
 
-### 2.2. Các câu hỏi cấu hình từng bước:
-1. **What is the name of the package?** $\rightarrow$ `react-native-device-helper`
-2. **What is the description?** $\rightarrow$ `Module đọc thông tin phần cứng Android & iOS dùng chung`
-3. **What type of library do you want to develop?** $\rightarrow$ Chọn: **`Turbo module (Integration for native APIs to JS)`**
-4. **Which language do you want to use for native code?** $\rightarrow$ Chọn: **`Kotlin & Objective-C`**
-5. **What type of example app do you want to create?** $\rightarrow$ Chọn: **`App with Expo CLI (Managed Expo app for easier upgrades)`**
-6. **Which tools do you want to configure?** $\rightarrow$ Chọn: **`ESLint with Prettier, Jest, Lefthook with Commitlint, Release It`**
+**Thông số cấu hình:**
+* **Package name:** `react-native-device-helper`
+* **Library type:** `Turbo module` *(Hỗ trợ song song cả New Architecture TurboModule lẫn Backward Compatibility Bridge)*
+* **Native languages:** `Kotlin & Objective-C` *(Hỗ trợ biên dịch đồng thời mã nguồn Java thuần)*
+* **Example app:** `App with Expo CLI` *(Tối ưu hóa quy trình kiểm thử nội bộ)*
+* **Quality tooling:** `ESLint, Prettier, Jest, Lefthook, Commitlint`
 
----
 
-### 2.3. Cấu trúc thư mục thực tế được tạo ra
-```text
-react-native-device-helper/
-├── android/                             <-- Mã nguồn Android độc lập của thư viện
-│   ├── build.gradle                     <-- Cấu hình biên dịch Gradle
-│   └── src/main/java/com/devicehelper/
-│       ├── DeviceHelperModule.java      <-- File logic Native chính (đọc RAM, Pin, Toast)
-│       └── DeviceHelperPackage.java     <-- File đăng ký module vào React Native
-├── ios/                                 <-- Mã nguồn iOS độc lập của thư viện
-│   ├── DeviceHelper.podspec             <-- Cấu hình CocoaPods cho iOS
-│   ├── DeviceHelper.h
-│   └── DeviceHelper.mm
-├── src/                                 <-- Tầng giao tiếp TypeScript
-│   ├── NativeDeviceHelper.ts            <-- Spec interface của TurboModule
-│   ├── index.tsx                        <-- File wrapper và export chính cho JS/TS
-│   ├── multiply.native.tsx
-│   └── multiply.tsx
-├── example/                             <-- App mẫu Expo tích hợp sẵn để test ngay tại chỗ
-│   ├── src/App.tsx                      <-- Giao diện test các nút bấm Native
-│   └── package.json
-├── package.json                         <-- Khai báo metadata thư viện
-└── .yarnrc.yml                          <-- Cấu hình Yarn modern (Berry)
-```
-
----
-
-### 2.4. BƯỚC BẮT BUỘC: Cài đặt Dependencies cho Thư viện
-> **Hiện tượng thường gặp:** Khi vừa tạo xong thư viện, nếu bạn mở file `src/index.tsx` trong VS Code ngay, bạn sẽ thấy báo lỗi đỏ gạch chân:  
-> `Cannot find module "react-native" or its corresponding type declarations.`  
->  
-> **Nguyên nhân:** Công cụ `create-react-native-library` chỉ sinh ra bộ khung file chứ **chưa tự động tải thư viện về máy** (chưa có thư mục `node_modules`).
-
-**Cách xử lý (Chạy 1 lần duy nhất):**  
-Mở terminal tại thư mục gốc của thư viện (`react-native-device-helper`) và chạy lệnh:
-
+Thực hiện cài đặt dependencies gốc để nạp type definitions:
 ```bash
 corepack yarn install
-# hoặc nếu máy đã cài yarn global: yarn install
 ```
-Sau khi cài đặt xong, nhấn tổ hợp phím `Ctrl + Shift + P` trên VS Code $\rightarrow$ gõ **`Developer: Reload Window`** $\rightarrow$.
+
+**Cấu trúc thư mục sau khởi tạo:**
+```text
+react-native-device-helper/
+├── android/                             <-- Module Android độc lập
+│   ├── build.gradle                     <-- Định nghĩa SDK compile & dependencies
+│   └── src/main/java/com/devicehelper/
+│       ├── DeviceHelperModule.java      <-- Business logic (RAM, Battery, Toast, Events)
+│       └── DeviceHelperPackage.java     <-- ReactPackage interface cho Autolinking
+├── ios/                                 <-- Module iOS (Podspec & Native code)
+├── src/                                 <-- TypeScript Specification & Public APIs
+│   ├── NativeDeviceHelper.ts            <-- Codegen Spec Interface
+│   └── index.tsx                        <-- Public API Wrapper & Typings
+├── example/                             <-- Ứng dụng kiểm thử độc lập
+├── lib/                                 <-- Mã nguồn JS/D.TS đã biên dịch (Phục vụ phân phối)
+└── package.json                         <-- Khai báo metadata và export maps
+```
 
 ---
 
-## 3. BƯỚC 2: VIẾT MÃ NGUỒN NATIVE PHÍA ANDROID (JAVA)
+### Giai đoạn 2: Hiện thực hóa Tầng Native (Android Java/Kotlin)
 
-> **LƯU Ý:**
-> Sau khi bạn tạo 2 file `.java` bên dưới, **BẮT BUỘC PHẢI XÓA 2 FILE `.kt` MẶC ĐỊNH CÓ CÙNG TÊN** (`DeviceHelperModule.kt` và `DeviceHelperPackage.kt`).  
-> Nếu không xóa, trình biên dịch Android sẽ báo lỗi: `Duplicate class com.devicehelper.DeviceHelperModule found in modules...` do có 2 file cùng định nghĩa 1 class!
+> **Quy tắc:** Khi chuyển đổi sang Java, cần loại bỏ các file template `.kt` mặc định có cùng định danh lớp (`DeviceHelperModule.kt`, `DeviceHelperPackage.kt`) nhằm loại trừ lỗi `Duplicate class` trong quá trình Java compilation.
 
-### 3.1. File 1: `DeviceHelperModule.java`
+#### 1. Định nghĩa Module Logic: `DeviceHelperModule.java`
 Đường dẫn: `android/src/main/java/com/devicehelper/DeviceHelperModule.java`
 
-> **Giải thích cho người mới:**
-> * Kế thừa `ReactContextBaseJavaModule` để trở thành một Native Module hợp lệ.
-> * `getName()`: Trả về tên định danh khi JS gọi `NativeModules.<TênModule>`.
-> * `@ReactMethod`: Bắt buộc phải có để công khai hàm ra JavaScript.
-> * `Promise promise`: Dùng để trả dữ liệu về cho JS bất đồng bộ (`promise.resolve()` khi thành công, `promise.reject()` khi lỗi).
-> * `UiThreadUtil.runOnUiThread`: Đẩy code về Main Thread khi cần tương tác với UI hệ thống (như hiển thị Toast).
+* **Quy chuẩn kế thừa:** `ReactContextBaseJavaModule`.
+* **Quản lý luồng (Threading):** Các tác vụ can thiệp giao diện (Toast, Dialog) bắt buộc thực thi trên Android UI Thread thông qua `UiThreadUtil.runOnUiThread(...)`. Các tác vụ tính toán nặng hoặc đọc dữ liệu hệ thống thực thi trên background queue và trả về dữ liệu qua `Promise`.
+* **Cơ chế Event Emitter:** Tích hợp `DeviceEventManagerModule.RCTDeviceEventEmitter` để dispatch sự kiện thời gian thực từ phần cứng lên tầng JS.
 
 ```java
 package com.devicehelper;
@@ -176,7 +112,7 @@ public class DeviceHelperModule extends ReactContextBaseJavaModule {
         return "DeviceHelperModule";
     }
 
-    // 1. Cung cấp hằng số tĩnh đọc đồng bộ (Sync Constants)
+    // 1. Cung cấp hằng số hệ thống đọc đồng bộ khi khởi tạo
     @Override
     public Map<String, Object> getConstants() {
         Map<String, Object> constants = new HashMap<>();
@@ -187,11 +123,11 @@ public class DeviceHelperModule extends ReactContextBaseJavaModule {
         return constants;
     }
 
-    // 2. Hàm Bất đồng bộ: Lấy RAM & Pin qua Promise
+    // 2. Tác vụ bất đồng bộ: Thu thập số liệu RAM & Trạng thái Pin qua Promise
     @ReactMethod
     public void getHardwareInfo(Promise promise) {
         try {
-            // Đọc RAM
+            // Đọc thông số RAM hệ thống
             ActivityManager actManager = (ActivityManager) reactContext.getSystemService(Context.ACTIVITY_SERVICE);
             ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
             if (actManager != null) {
@@ -200,7 +136,7 @@ public class DeviceHelperModule extends ReactContextBaseJavaModule {
             double totalRamMb = memInfo.totalMem / (1024.0 * 1024.0);
             double availRamMb = memInfo.availMem / (1024.0 * 1024.0);
 
-            // Đọc Mức Pin
+            // Đọc trạng thái Pin & Nguồn sạc
             IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = reactContext.registerReceiver(null, filter);
             int level = batteryStatus != null ? batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) : -1;
@@ -211,7 +147,7 @@ public class DeviceHelperModule extends ReactContextBaseJavaModule {
             boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                                  status == BatteryManager.BATTERY_STATUS_FULL;
 
-            // Đóng gói WritableMap gửi về cho React Native
+            // Đóng gói WritableMap truyền qua Bridge
             WritableMap map = Arguments.createMap();
             map.putDouble("totalRamMb", Math.round(totalRamMb));
             map.putDouble("availRamMb", Math.round(availRamMb));
@@ -223,11 +159,11 @@ public class DeviceHelperModule extends ReactContextBaseJavaModule {
 
             promise.resolve(map);
         } catch (Exception e) {
-            promise.reject("HARDWARE_ERROR", "Lỗi đọc phần cứng: " + e.getMessage(), e);
+            promise.reject("HARDWARE_ERROR", "Lỗi truy xuất phần cứng thiết bị: " + e.getMessage(), e);
         }
     }
 
-    // 3. Thực thi hành động Native: Bắn Android Toast
+    // 3. Tác vụ giao diện: Điều hướng hiển thị thông báo Toast trên Main Thread
     @ReactMethod
     public void showToast(String message, int duration) {
         UiThreadUtil.runOnUiThread(new Runnable() {
@@ -239,7 +175,7 @@ public class DeviceHelperModule extends ReactContextBaseJavaModule {
         });
     }
 
-    // 4. Bắn sự kiện ngược từ Native lên JS (Event Emitter)
+    // 4. Phát tín hiệu sự kiện hai chiều (Native -> JS)
     @ReactMethod
     public void triggerNativePing(String customNote) {
         WritableMap eventData = Arguments.createMap();
@@ -251,7 +187,7 @@ public class DeviceHelperModule extends ReactContextBaseJavaModule {
             .emit("onDeviceHelperPing", eventData);
     }
 
-    // Bắt buộc cho NativeEventEmitter
+    // Bắt buộc tuân thủ giao thức NativeEventEmitter
     @ReactMethod
     public void addListener(String eventName) {}
 
@@ -260,10 +196,10 @@ public class DeviceHelperModule extends ReactContextBaseJavaModule {
 }
 ```
 
----
-
-### 3.2. File 2: `DeviceHelperPackage.java`
+#### 2. Định nghĩa Package Registry: `DeviceHelperPackage.java`
 Đường dẫn: `android/src/main/java/com/devicehelper/DeviceHelperPackage.java`
+
+Hiện thực hóa `ReactPackage` interface làm đầu mối cho trình phân giải Autolinking:
 
 ```java
 package com.devicehelper;
@@ -285,13 +221,22 @@ public class DeviceHelperPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
+        
+        // 1. Đăng ký Module chính: RAM, Pin, Toast, Event Emitter
         modules.add(new DeviceHelperModule(reactContext));
+
+        // 2. Đăng ký các Module Native khác nếu có thêm tính năng (VD: Cảm biến, Bluetooth, Bảo mật)
+        // modules.add(new SensorHelperModule(reactContext));
+        // modules.add(new BluetoothHelperModule(reactContext));
+        // modules.add(new NetworkSecurityModule(reactContext));
+
         return modules;
     }
 
     @NonNull
     @Override
     public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
+        // Trả về danh sách Native Custom Views nếu có (VD: Custom CameraView, VideoView)
         return Collections.emptyList();
     }
 }
@@ -299,9 +244,13 @@ public class DeviceHelperPackage implements ReactPackage {
 
 ---
 
-## 4. BƯỚC 3: VIẾT TẦNG TYPESCRIPT WRAPPER (`src/index.tsx`)
+### Giai đoạn 3: Hiện thực hóa Tầng Type-Safe Wrapper (TypeScript)
 
-Đường dẫn: `src/index.tsx` *(chú ý: nằm trực tiếp trong thư mục `src/`, không nhầm sang thư mục `android/`)*.
+Đường dẫn: `src/index.tsx`
+
+* **Cơ chế Proxy Fail-safe:** Cung cấp thông báo lỗi minh bạch nếu lập trình viên quên build native binary trước khi chạy JavaScript.
+* **Xử lý Listener Cleanup:** Định dạng callback trả về hàm `unsubscribe()` nhằm phòng tránh rò rỉ bộ nhớ (Memory Leak) trong React lifecycle.
+* **Xử lý tương thích kiểu dữ liệu `TS2345`:** Chuẩn hóa kiểu signature của `NativeEventEmitter.addListener`.
 
 ```typescript
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
@@ -309,9 +258,9 @@ import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 export { multiply } from './multiply';
 
 const LINKING_ERROR =
-  `Thư viện 'react-native-device-helper' chưa được liên kết!\n\n` +
-  Platform.select({ ios: "- Bạn đã chạy 'pod install' chưa?\n", default: '' }) +
-  '- Hãy kiểm tra lại xem app đã build lại mã Native chưa.\n';
+  `Thư viện 'react-native-device-helper' chưa được liên kết mã nguồn Native!\n\n` +
+  Platform.select({ ios: "- Kiểm tra bước thực thi 'pod install' trên iOS.\n", default: '' }) +
+  '- Hãy đảm bảo ứng dụng đã được build lại nhị phân (native binary).\n';
 
 const DeviceHelperModule = NativeModules.DeviceHelperModule
   ? NativeModules.DeviceHelperModule
@@ -341,7 +290,7 @@ export interface DeviceConstants {
   MODEL: string;
 }
 
-// 1. Đọc Constants tĩnh
+// 1. Đọc hằng số cấu hình tĩnh
 export const getDeviceConstants = (): DeviceConstants | null => {
   if (Platform.OS !== 'android') return null;
   return {
@@ -352,24 +301,24 @@ export const getDeviceConstants = (): DeviceConstants | null => {
   };
 };
 
-// 2. Lấy thông tin phần cứng qua Promise
+// 2. Thu thập thông tin phần cứng qua Promise
 export const getHardwareInfo = async (): Promise<HardwareInfo> => {
   return await DeviceHelperModule.getHardwareInfo();
 };
 
-// 3. Hiển thị Android Toast
+// 3. Kích hoạt Toast UI trên Android
 export const showToast = (message: string, isLong = false): void => {
   if (Platform.OS === 'android') {
     DeviceHelperModule.showToast(message, isLong ? 1 : 0);
   }
 };
 
-// 4. Kích hoạt Event từ Native
+// 4. Kích hoạt phát tín hiệu từ Native
 export const triggerNativePing = (note: string): void => {
   DeviceHelperModule.triggerNativePing(note);
 };
 
-// 5. Đăng ký nhận Event (đã fix type TS2345)
+// 5. Đăng ký theo dõi sự kiện với hàm dọn dẹp bộ nhớ tự động
 let eventEmitter: NativeEventEmitter | null = null;
 if (DeviceHelperModule) {
   eventEmitter = new NativeEventEmitter(DeviceHelperModule);
@@ -384,88 +333,153 @@ export const subscribeToDevicePing = (
     (event: any) => callback(event)
   );
   return () => {
-    subscription.remove(); // Dọn dẹp listener tránh rò rỉ RAM
+    subscription.remove();
   };
 };
 ```
 
-> **Kiểm tra độ chuẩn xác:** Chạy lệnh `corepack yarn typecheck`. Kết quả báo **0 errors** là code TypeScript đã hoàn toàn hợp lệ!
-
 ---
 
-## 5. BƯỚC 4: CHẠY THỬ NGHIỆM NGAY TRÊN APP MẪU (`example/`)
+### Giai đoạn 4: Kiểm thử Cục bộ (Automated Check & Example App)
 
-Trước khi đem thư viện đi tích hợp vào các app khác, có thể chạy thử trực tiếp trên app mẫu Expo đi kèm sẵn trong thư viện.
+Trước khi phát hành, tiến hành thẩm định hai tầng:
 
-Mở terminal tại thư mục `react-native-device-helper` và gõ:
-
-```bash
-corepack yarn example android
-```
-
-Hệ thống sẽ tự động khởi động máy ảo hoặc thiết bị thật Android, cài app mẫu và hiển thị giao diện để bạn bấm nút đọc RAM, Pin và bắn Toast ngay tại chỗ!
-
----
-
-## 6. BƯỚC 5: PHÂN PHỐI THƯ VIỆN ĐỂ TÁI SỬ DỤNG CHO NHIỀU APP
-
-Bạn chọn 1 trong 3 phương án tùy thuộc hạ tầng của công ty:
-
-### Phương án A: Lưu trên Git nội bộ của công ty (Nhanh nhất & Miễn phí 100%)
-1. Khởi tạo Git bên trong thư mục thư viện:
+1. **Kiểm tra kiểu dữ liệu tĩnh:**
    ```bash
-   git init
-   git add .
-   git commit -m "feat: initial native device helper library"
+   corepack yarn typecheck
    ```
-2. Đẩy lên GitLab hoặc GitHub riêng của công ty:
+2. **Kiểm thử trên ứng dụng mẫu tích hợp (`example/`):**
    ```bash
-   git remote add origin https://gitlab.mycompany.com/mobile-libs/react-native-device-helper.git
-   git push -u origin main
+   corepack yarn example android
    ```
 
-### Phương án B: Dùng Monorepo (pnpm workspaces / Turborepo)
-Nếu tất cả các app và thư viện cùng nằm trong 1 repo lớn, bạn chỉ cần đưa thư viện vào thư mục `packages/react-native-device-helper`.
+---
 
-### Phương án C: Publish lên Private NPM Registry
-Nếu công ty có hệ thống quản lý gói riêng (Verdaccio / Nexus / GitHub Packages):
-```bash
-npm publish --access restricted
-```
+### Giai đoạn 5: Đóng gói & Phân phối qua Git Repository
+
+> **Phạm vi áp dụng:**  
+> * **Giai đoạn phát triển cục bộ (Local Dev / Debug):** Nếu chỉ đang phát triển và kiểm thử module trên máy tính cá nhân bằng đường dẫn tương đối (Phương pháp 2: `file:`), việc đẩy mã lên Remote Git là **tùy chọn (Optional)**.  
+> * **Giai đoạn bàn giao & phân phối (Team Distribution / CI/CD):** Khi cần chia sẻ thư viện cho các thành viên hoặc cấu hình máy chủ tự động build APK (Phương pháp 1: Git URL), việc đóng gói và đẩy lên Git Remote là **bắt buộc (Mandatory)**.
+
+Khi phân phối thư viện thông qua Remote Git URL (không qua public registry như npmjs), các package managers hiện đại (đặc biệt là `pnpm`) kích hoạt cơ chế bảo mật chặn thực thi build scripts (`ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`). 
+
+**Quy trình chuẩn hóa để đóng gói và phân phối qua Git:**
+
+1. **Cấu hình `.gitignore` của thư viện:**  
+   Bỏ qua việc ignore thư mục `lib/` để Git theo dõi toàn bộ JavaScript bundles và TypeScript definition files đã biên dịch:
+   ```gitignore
+   # Tracked for Git distribution
+   # lib/
+   ```
+
+2. **Cấu hình `package.json` của thư viện:**  
+   Tách biệt lifecycle script: chuyển `"prepare": "bob build"` thành `"build": "bob build"` và `"prepack": "bob build"`. Quy chuẩn này đảm bảo các ứng dụng consumer khi kéo mã nguồn qua Git không phải tự chạy lại build tool:
+   ```json
+   "scripts": {
+     "clean": "del-cli lib",
+     "build": "bob build",
+     "prepack": "bob build",
+     "typecheck": "tsc"
+   }
+   ```
+
+3. **Thực thi biên dịch và xuất bản lên Git:**
+   ```bash
+   # Bước 1: Biên dịch mã nguồn ra thư mục lib/
+   corepack yarn build
+
+   # Bước 2: Commit mã nguồn kèm artifacts đã build
+   git add .gitignore package.json lib
+   git commit -m "build: compile lib bundle and configure scripts for git distribution"
+
+   # Bước 3: Đẩy lên Git Repository trung tâm (chỉ cần khi phân phối qua Git)
+   git push origin main
+   ```
 
 ---
 
-## 7. BƯỚC 6: CÀI ĐẶT VÀ SỬ DỤNG TRONG ỨNG DỤNG CON (`rn`, `rn-demo`, `rn-base`)
+### Đầu ra bắt buộc của Quy trình Triển khai (Deliverables & Artifacts)
 
-### 7.1. Cài đặt vào bất kỳ App nào trong công ty
-Tại thư mục gốc của App con cần dùng:
+Sau khi hoàn tất quy trình triển khai module, sản phẩm kỹ thuật bàn giao bao gồm các thành phần artifacts sau:
 
-* **Nếu dùng Git (Phương án A):**
-  ```bash
-  pnpm add git+https://gitlab.mycompany.com/mobile-libs/react-native-device-helper.git
-  ```
-* **Nếu dùng Monorepo (Phương án B):**
-  ```bash
-  pnpm add react-native-device-helper --workspace
-  ```
-* **Nếu dùng Private NPM (Phương án C):**
-  ```bash
-  pnpm add @company/react-native-device-helper
-  ```
-
-> 🎯 **LƯU Ý CỰC KỲ QUAN TRỌNG:**
-> Bạn **KHÔNG CẦN** sửa bất kỳ dòng code nào trong `MainApplication.kt` hay `android/` của App con! Cơ chế **Autolinking** của React Native sẽ tự động tìm thấy và liên kết thư viện vào app!  
-> **Dù bạn có chạy `npx expo prebuild --clean` bao nhiêu lần thì code Native trong thư viện vẫn an toàn 100%!**
+| Thành phần Deliverable | Quy cách & Vị trí Artifact | Tiêu chuẩn Nghiệm thu Kỹ thuật | Mức độ Bắt buộc |
+| :--- | :--- | :--- | :--- |
+| **1. Mã nguồn Native Độc lập** | `android/src/main/java/.../` | • Kế thừa `ReactContextBaseJavaModule` và triển khai `ReactPackage`.<br>• Không tồn tại đồng thời file `.kt` và `.java` trùng tên (loại bỏ duplicate class).<br>• Tác vụ can thiệp UI (Toast, Dialog) bắt buộc bọc qua `UiThreadUtil.runOnUiThread`. | **Bắt buộc 100%** |
+| **2. Bundle Biên dịch sẵn (`lib/`)** | `lib/module/` (JavaScript ESM)<br>`lib/typescript/` (Type definitions `.d.ts`) | • Được sinh tự động bởi lệnh `corepack yarn build` (react-native-builder-bob).<br>• Thư mục `lib/` được mở theo dõi trong `.gitignore` để sẵn sàng phân phối. | **Bắt buộc 100%** |
+| **3. Cấu hình Phân phối (`package.json`)** | `package.json` | • Khai báo entry points: `"main": "./lib/module/index.js"`, `"types": "./lib/typescript/src/index.d.ts"`.<br>• Trường `"files"` bao gồm đầy đủ `["src", "lib", "android", "ios", ...]`.<br>• Tách script: Chuyển `"prepare": "bob build"` sang `"build"` / `"prepack"` để phòng ngừa lỗi bảo mật PNPM. | **Bắt buộc 100%** |
+| **4. Kho lưu trữ Phân phối (Remote Repo)** | Git Repository (GitHub / GitLab) | • Push hoàn tất lên branch `main` hoặc gắn tag phiên bản SemVer (`v0.1.0`), sẵn sàng nạp qua Git URL cho toàn bộ team và CI/CD. | • **Bắt buộc** nếu dùng *Phương pháp 1 (Git URL)*.<br>• *Không bắt buộc* nếu dùng *Phương pháp 2 (Local File Path)*. |
+| **5. Ứng dụng Kiểm thử Cục bộ (`example/`)** | `example/` (Expo / React Native App) | • Khởi chạy độc lập (`corepack yarn example android`) đạt kết quả kiểm thử toàn bộ tính năng Native trước khi cung cấp cho các ứng dụng consumer. | **Bắt buộc 100%** |
 
 ---
 
-### 7.2. Gọi và sử dụng trong màn hình UI của App con
+## 2. QUY TRÌNH TÍCH HỢP VÀO ỨNG DỤNG CONSUMER
 
-Mở bất kỳ màn hình nào trong app con (ví dụ: `HomeScreen.tsx`):
+Cơ chế **Autolinking** của React Native tự động nhận diện `DeviceHelperPackage` trong `node_modules` cho tất cả các phương pháp cài đặt dưới đây mà **hoàn toàn không cần can thiệp bất kỳ file nào trong thư mục `android/` hoặc `ios/`** của ứng dụng (không cần chỉnh sửa `MainApplication.kt`, `settings.gradle` hay `build.gradle`).
+
+---
+
+### 2.1. Phương pháp 1: Tích hợp qua Git Remote URL (GitHub / GitLab)
+Phương pháp phân phối nhanh chóng, linh hoạt giữa nhiều kho lưu trữ độc lập mà không yêu cầu thiết lập máy chủ package registry riêng.
+
+* **Chính sách Bảo mật (Private vs Public Repository):**  
+  Thư viện **HOÀN TOÀN KHÔNG BẮT BUỘC PHẢI PUBLIC**. Trong môi trường doanh nghiệp, toàn bộ các module nội bộ đều được thiết lập ở chế độ **Private Repository** (GitHub, GitLab nội bộ, Bitbucket) để bảo vệ tài sản trí tuệ.  
+  *Bản chất cơ chế:* Trình quản lý gói `pnpm` ủy quyền trực tiếp cho Git client của hệ điều hành thực hiện tác vụ `clone`/`fetch`. Do đó, bất kỳ môi trường nào có quyền đọc vào Private Repo đều có thể cài đặt và cập nhật bình thường.
+
+* **Cơ chế Xác thực (Authentication) cho Private Repo:**
+  1. **Xác thực qua SSH Key (Khuyến nghị chuẩn cho Kỹ sư):**
+     ```bash
+     pnpm add git+ssh://git@github.com:QuangLam0208/react-native-device-helper.git
+     # Hoặc cú pháp rút gọn:
+     pnpm add git@github.com:QuangLam0208/react-native-device-helper.git
+     ```
+     *Ưu điểm:* Tự động xác thực qua SSH Agent cục bộ (`~/.ssh/id_ed25519` hoặc `id_rsa`), an toàn tuyệt đối và không lưu token nhạy cảm trong mã nguồn.
+  2. **Xác thực qua HTTPS với Git Credential Manager (GCM):**
+     ```bash
+     pnpm add git+https://github.com/QuangLam0208/react-native-device-helper.git
+     ```
+     *Ưu điểm:* Git tự động tận dụng phiên đăng nhập và token đã lưu trữ sẵn trong hệ điều hành (Windows Credential Manager / macOS Keychain).
+
+* **Lệnh cài đặt cố định phiên bản (Release Tag):**
+  ```bash
+  # Khuyến nghị cho Production: Cố định theo tag phiên bản phát hành
+  pnpm add git+https://github.com/QuangLam0208/react-native-device-helper.git#v0.1.0
+  ```
+
+* **Khai báo trong `package.json`:**
+  ```json
+  "dependencies": {
+    "react-native-device-helper": "github:QuangLam0208/react-native-device-helper"
+  }
+  ```
+
+* **Cơ chế vận hành:** `pnpm` tải toàn bộ repo từ Git, giải nén vào virtual store và tạo symlink vào `node_modules/react-native-device-helper`. Mã băm commit SHA được khóa trong `pnpm-lock.yaml` để bảo đảm tính tái lập (reproducible build) đồng nhất giữa toàn bộ thành viên trong dự án.
+
+---
+
+### 2.2. Phương pháp 2: Tích hợp qua Local File Path (Phù hợp Dev & Debug nhanh)
+Phương pháp tối ưu trong giai đoạn đang trực tiếp phát triển song song cả module Native và ứng dụng consumer:
+
+* **Lệnh cài đặt:**
+  ```bash
+  pnpm add file:../native-module/react-native-device-helper
+  ```
+* **Khai báo trong `package.json`:**
+  ```json
+  "dependencies": {
+    "react-native-device-helper": "file:../native-module/react-native-device-helper"
+  }
+  ```
+* **Cơ chế vận hành:** `pnpm` tạo liên kết symlink trực tiếp từ `node_modules` của consumer trỏ thẳng sang thư mục source code local của module. Mọi thay đổi mã nguồn (Java hoặc TypeScript) tại module sẽ được ứng dụng nhận diện ngay lập tức mà không cần commit hay đẩy mã lên Git.
+
+---
+
+### 2.5. Triển khai trong Tầng Giao Diện (UI Implementation)
+
+Ví dụ tích hợp trong một Component (`NativeBridgeDemoCard.tsx`):
 
 ```tsx
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
 import {
   getHardwareInfo,
   showToast,
@@ -474,94 +488,89 @@ import {
   type HardwareInfo,
 } from 'react-native-device-helper';
 
-export function HardwareDemoScreen() {
-  const [info, setInfo] = useState<HardwareInfo | null>(null);
-  const [eventMsg, setEventMsg] = useState<string>('');
+export function NativeBridgeDemoCard() {
+  const [hardwareInfo, setHardwareInfo] = useState<HardwareInfo | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [eventLog, setEventLog] = useState<string>('Chưa có sự kiện.');
 
   useEffect(() => {
-    // Đăng ký nhận sự kiện
+    // Đăng ký nhận sự kiện Native -> JS
     const unsubscribe = subscribeToDevicePing((event) => {
-      setEventMsg(`${event.message} lúc ${new Date(event.timestamp).toLocaleTimeString()}`);
+      setEventLog(`${event.message} (Timestamp: ${new Date(event.timestamp).toLocaleTimeString()})`);
     });
 
-    // Cleanup khi component bị hủy
+    // Cleanup khi component unmount
     return () => unsubscribe();
   }, []);
 
-  const handleReadHardware = async () => {
+  const handleFetchMetrics = async () => {
     try {
+      setLoading(true);
       const data = await getHardwareInfo();
-      setInfo(data);
+      setHardwareInfo(data);
     } catch (error: any) {
-      alert(error.message);
+      showToast('Lỗi truy xuất: ' + error.message, true);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Demo Gọi Thư Viện Native Dùng Chung</Text>
+    <View style={styles.card}>
+      <Text style={styles.header}>Quản Lý Phần Cứng (Native Module)</Text>
 
-      <Button title="1. Đọc RAM & Pin từ Native" onPress={handleReadHardware} />
-      {info && (
-        <View style={styles.box}>
-          <Text>RAM trống: {info.availRamMb} MB / {info.totalRamMb} MB</Text>
-          <Text>Pin: {info.batteryLevel}% (Đang sạc: {info.isCharging ? 'Có' : 'Không'})</Text>
+      <Button title="Đọc Thông Số RAM & Pin" onPress={handleFetchMetrics} />
+
+      {loading && <ActivityIndicator style={{ marginTop: 10 }} />}
+
+      {hardwareInfo && (
+        <View style={styles.metricsBox}>
+          <Text style={styles.metricText}>
+            RAM Khả Dụng: {hardwareInfo.availRamMb} MB / {hardwareInfo.totalRamMb} MB
+          </Text>
+          <Text style={styles.metricText}>
+            Mức Pin: {hardwareInfo.batteryLevel}% {hardwareInfo.isCharging ? '(Đang Sạc)' : '(Không Sạc)'}
+          </Text>
+          <Text style={styles.metricText}>
+            Thiết Bị: {hardwareInfo.manufacturer} - {hardwareInfo.model} (Android {hardwareInfo.androidVersion})
+          </Text>
         </View>
       )}
 
-      <View style={{ height: 15 }} />
+      <View style={{ height: 12 }} />
       <Button
-        title="2. Bắn Android Toast"
-        onPress={() => showToast('Xin chào từ Thư Viện Dùng Chung!')}
+        title="Hiển Thị Native Toast"
+        onPress={() => showToast('Thông báo phát ra từ Native Module độc lập!')}
       />
 
-      <View style={{ height: 15 }} />
+      <View style={{ height: 12 }} />
       <Button
-        title="3. Bắn Event Native -> JS"
-        onPress={() => triggerNativePing('Test Ping!')}
+        title="Gửi Tín Hiệu Native Ping"
+        onPress={() => triggerNativePing('Lệnh kiểm tra luồng hai chiều')}
       />
-      {eventMsg !== '' && <Text style={styles.eventText}>{eventMsg}</Text>}
+
+      <Text style={styles.eventText}>{eventLog}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: 'center' },
-  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  box: { backgroundColor: '#f0f0f0', padding: 10, marginTop: 10, borderRadius: 8 },
-  eventText: { marginTop: 10, color: 'green', textAlign: 'center' },
+  card: { padding: 16, backgroundColor: '#ffffff', borderRadius: 12, elevation: 2 },
+  header: { fontSize: 16, fontWeight: '700', marginBottom: 12, textAlign: 'center' },
+  metricsBox: { marginTop: 12, padding: 12, backgroundColor: '#f5f5f5', borderRadius: 8 },
+  metricText: { fontSize: 14, color: '#333333', marginVertical: 2 },
+  eventText: { marginTop: 12, fontSize: 12, color: '#008000', textAlign: 'center', fontStyle: 'italic' },
 });
 ```
 
 ---
 
-## 8. CÁC LỖI KINH ĐIỂN THƯỜNG GẶP & CÁCH KHẮC PHỤC
+## 3. ĐẶC TẢ KỸ THUẬT & QUẢN LÝ RỦI RO
 
-### Lỗi 1: `Cannot find module "react-native" or its corresponding type declarations`
-* **Nguyên nhân:** Thư viện vừa khởi tạo chưa có thư mục `node_modules`.
-* **Khắc phục:** Chạy `corepack yarn install` bên trong thư mục thư viện, sau đó reload lại cửa sổ VS Code (`Ctrl + Shift + P` $\rightarrow$ `Developer: Reload Window`).
-
-### Lỗi 2: `Duplicate class com.devicehelper.DeviceHelperModule found in modules...`
-* **Nguyên nhân:** Khi thêm file `.java`, bạn chưa xóa file `.kt` mặc định có cùng tên trong thư mục `android/src/main/java/...`.
-* **Khắc phục:** Xóa bỏ 2 file `.kt` mặc định (`DeviceHelperModule.kt` và `DeviceHelperPackage.kt`).
-
-### Lỗi 3: `Argument of type '(event: ...) => void' is not assignable to parameter... (TS2345)`
-* **Nguyên nhân:** Kiểu dữ liệu sự kiện của `NativeEventEmitter.addListener` trong React Native yêu cầu callback nhận `(...args: any[]) => void`.
-* **Khắc phục:** Bọc hàm callback dưới dạng: `(event: any) => callback(event)`.
-
-### Lỗi 4: `CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views`
-* **Nguyên nhân:** Hàm `@ReactMethod` can thiệp vào giao diện của Android (như hiển thị Toast, Dialog) nhưng lại chạy trên Background Thread của React Native.
-* **Khắc phục:** Luôn bọc code can thiệp UI trong `UiThreadUtil.runOnUiThread(...)`.
-
----
-
-## 9. CÁC GIÁ TRỊ CỐT LÕI KHI BẢO VỆ THIẾT KẾ VỚI LEAD
-
-1. **Tính bền vững trước lệnh Prebuild của Expo:**  
-   > *"Thư viện được quản lý trong `node_modules`, mỗi khi team chạy `npx expo prebuild --clean` để nâng cấp bản Expo/RN mới, cơ chế Autolinking sẽ tự động nhận diện lại mà không sợ mất bất kỳ dòng code native nào."*
-
-2. **Tiết kiệm tối đa chi phí bảo trì (Single Source of Truth):**  
-   > *"Tất cả các tính năng can thiệp phần cứng hay SDK bên thứ 3 chỉ cần viết và bảo trì ở 1 repository duy nhất. Các ứng dụng khác trong công ty chỉ việc cập nhật version package là có ngay tính năng mới."*
-
-3. **Phân tách trách nhiệm chuyên nghiệp (Separation of Concerns):**  
-   > *"Dev làm giao diện React Native không cần biết Java hay Swift, chỉ cần gọi hàm qua TypeScript Interface với autocomplete đầy đủ."*
+| Hiện tượng / Mã lỗi | Nguyên nhân gốc rễ (Root Cause) | Quy trình xử lý tiêu chuẩn (Remediation) |
+| :--- | :--- | :--- |
+| **`Duplicate class ... found in modules`** | Dự án tồn tại đồng thời cả file Java và Kotlin cùng tên class trong `android/src/main/java/...`. | Xóa bỏ các template `.kt` mặc định nếu quyết định triển khai bằng Java. |
+| **`CalledFromWrongThreadException`** | `@ReactMethod` can thiệp các thành phần UI Android (Toast, Dialog, View hierarchy) nhưng chạy trên Native Background Thread. | Bắt buộc điều hướng qua `UiThreadUtil.runOnUiThread(new Runnable() { ... })`. |
+| **`ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`** | Package manager (`pnpm`) chặn tự động chạy `prepare: bob build` từ untrusted Git dependency vì lý do an ninh. | Biên dịch sẵn `lib/` bằng `yarn build`, un-ignore `lib/` trong `.gitignore`, chuyển script sang `prepack`/`build` và commit bản build lên Git. |
+| **`TS2345: Argument of type ... is not assignable`** | Signature của `NativeEventEmitter.addListener` yêu cầu callback dạng `(...args: any[]) => void`. | Chuẩn hóa tầng TypeScript wrapper: `eventEmitter.addListener(EVENT_NAME, (event: any) => callback(event))`. |
+| **Rò rỉ bộ nhớ (Memory Leak)** | Lắng nghe `NativeEventEmitter` mà không hủy đăng ký khi Component unmount. | Trả về hàm dọn dẹp `subscription.remove()` và kích hoạt trong hook `useEffect` cleanup. |
