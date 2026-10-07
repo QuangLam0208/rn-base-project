@@ -8,6 +8,7 @@ import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { Radio } from "@/components/Toggle/Radio"
 import { Switch } from "@/components/Toggle/Switch"
+import { NativeBridgeDemoCard } from "@/components/NativeBridgeDemoCard"
 import { changeLanguage, getCurrentLanguage, SupportedLanguageTag, TxKeyPath } from "@/i18n"
 import { translate } from "@/i18n/translate"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
@@ -83,7 +84,7 @@ export function SettingsScreen() {
   }
 
   return (
-    <Screen preset="fixed" safeAreaEdges={["top", "bottom"]} contentContainerStyle={themed($container)}>
+    <Screen preset="scroll" safeAreaEdges={["top", "bottom"]} contentContainerStyle={themed($container)}>
       <View style={themed($header)}>
         <PressableIcon icon="back" size={28} onPress={() => navigation.goBack()} />
         <Text tx="settingsScreen:title" preset="heading" style={themed($headerTitle)} />
@@ -136,6 +137,10 @@ export function SettingsScreen() {
         )}
       </View>
 
+      <View style={themed($section)}>
+        <NativeBridgeDemoCard />
+      </View>
+
       <View style={themed($footer)}>
         <TouchableOpacity
           style={themed($logoutButton)}
@@ -150,13 +155,9 @@ export function SettingsScreen() {
   )
 }
 
-const $container: ThemedStyle<ViewStyle> = () => ({
-  flex: 1,
-  // Screen's "fixed" preset defaults contentContainerStyle to
-  // justifyContent: "flex-end" — harmless for other screens here since
-  // their content is a flex:1 FlatList, but this screen's rows are fixed
-  // height, so without this override they'd all sink to the bottom.
+const $container: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   justifyContent: "flex-start",
+  paddingBottom: spacing.xxl,
 })
 
 const $header: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
@@ -192,9 +193,9 @@ const $updateStatusText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
 })
 
 const $footer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginTop: "auto",
+  marginTop: spacing.lg,
   paddingHorizontal: spacing.md,
-  paddingBottom: spacing.lg,
+  paddingBottom: spacing.xl,
 })
 
 const $logoutButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
