@@ -10,7 +10,7 @@ import {
   subscribeToDevicePing,
   triggerNativePing,
   type HardwareInfo,
-} from "react-native-device-helper"
+} from "native-device-helper"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
