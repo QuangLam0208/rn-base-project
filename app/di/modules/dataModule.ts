@@ -2,9 +2,11 @@ import { ContainerModule } from "inversify"
 
 import Config from "@/config"
 import { AppRepositoryImpl } from "@/data/AppRepositoryImpl"
+import { BiometricService } from "@/data/local/biometric/BiometricService"
 import { AppDatabase } from "@/data/local/room/AppDatabase"
 import { RoomService } from "@/data/local/room/RoomService"
 import { RoomServiceImpl } from "@/data/local/room/RoomServiceImpl"
+import { SecureStorageService } from "@/data/local/secure/SecureStorageService"
 import { StorageService } from "@/data/local/storage/StorageService"
 import { Api } from "@/data/remote/api"
 import { ApiService } from "@/data/remote/api/ApiService"
@@ -12,6 +14,7 @@ import { ApiServiceImpl } from "@/data/remote/api/ApiServiceImpl"
 import { MasterApiService } from "@/data/remote/api/master/MasterApiService"
 import { MasterApiServiceImpl } from "@/data/remote/api/master/MasterApiServiceImpl"
 import { Repository } from "@/data/Repository"
+import { AppLockStore } from "@/stores/appLockStore"
 import { AuthStore } from "@/stores/authStore"
 
 import { TYPES } from "../types"
@@ -25,6 +28,21 @@ export const dataModule = new ContainerModule((bind) => {
   bind(StorageService).toSelf().inSingletonScope()
   bind(AuthStore)
     .toDynamicValue((context) => new AuthStore(context.container.get(StorageService)))
+    .inSingletonScope()
+
+  // App lock (PIN + biometric on cold start) — see app/stores/appLockStore.ts.
+  bind(SecureStorageService).toSelf().inSingletonScope()
+  bind(BiometricService).toSelf().inSingletonScope()
+  bind(AppLockStore)
+    .toDynamicValue(
+      (context) =>
+        new AppLockStore(
+          context.container.get(StorageService),
+          context.container.get(SecureStorageService),
+          context.container.get(BiometricService),
+          context.container.get(AuthStore),
+        ),
+    )
     .inSingletonScope()
   bind(Api)
     .toDynamicValue((context) => new Api(context.container.get(AuthStore)))

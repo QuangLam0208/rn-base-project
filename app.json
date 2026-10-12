@@ -112,7 +112,14 @@
       {
         "cameraPermission": "Cho phép BaseApp truy cập máy ảnh để chụp ảnh và quét mã."
       }
-    ]
+    ],
+    [
+      "expo-local-authentication",
+      {
+        "faceIDPermission": "Cho phép $(PRODUCT_NAME) sử dụng Face ID để mở khoá ứng dụng."
+      }
+    ],
+    "expo-secure-store"
   ],
   "experiments": {
     "tsconfigPaths": true

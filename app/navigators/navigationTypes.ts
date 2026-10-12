@@ -8,6 +8,7 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
 import { MentorResponse } from "@/data/model/api/response/mentor/MentorResponse"
+import type { PinCodeMode } from "@/screens/PinCode/PinCodeViewModel"
 
 // Main Tab Navigator types
 export type MainTabParamList = {
@@ -25,6 +26,7 @@ export type AppStackParamList = {
   Settings: undefined
   MentorDetail: { mentorId: number; initialMentor?: MentorResponse }
   TodoList: undefined
+  PinCode: { mode: PinCodeMode }
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }

@@ -29,6 +29,7 @@ import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-c
 import * as navigationStorage from "./data/local/storage"
 import { storage } from "./data/local/storage"
 import { initI18n, LANGUAGE_STORAGE_KEY } from "./i18n"
+import { AppLockGate } from "./navigators/AppLockGate"
 import { AppNavigator } from "./navigators/AppNavigator"
 import { useNavigationPersistence } from "./navigators/navigationUtilities"
 import { ThemeProvider } from "./theme/context"
@@ -152,6 +153,7 @@ export function App() {
             onStateChange={onNavigationStateChange}
             onReady={onNavigationReady}
           />
+          <AppLockGate />
           <Toast config={toastConfig} />
         </ThemeProvider>
       </KeyboardProvider>

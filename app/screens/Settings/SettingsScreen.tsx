@@ -1,6 +1,7 @@
-import { useState } from "react"
-import { Alert, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import { useEffect, useState } from "react"
+import { Alert, AppState, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { useNavigation } from "@react-navigation/native"
+import { observer } from "mobx-react-lite"
 
 import { Button } from "@/components/Button"
 import { Icon, PressableIcon } from "@/components/Icon"
@@ -9,14 +10,16 @@ import { Text } from "@/components/Text"
 import { Radio } from "@/components/Toggle/Radio"
 import { Switch } from "@/components/Toggle/Switch"
 import { NativeBridgeDemoCard } from "@/components/NativeBridgeDemoCard"
+import type { BiometricSupport } from "@/data/local/biometric/BiometricService"
 import { changeLanguage, getCurrentLanguage, SupportedLanguageTag, TxKeyPath } from "@/i18n"
 import { translate } from "@/i18n/translate"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { container } from "@/di/container"
-import { AuthStore } from "@/stores/authStore"
+import { AppLockStore } from "@/stores/appLockStore"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 import { checkForUpdate, downloadAndApplyUpdate } from "@/utils/appUpdates"
+import { showWarning } from "@/utils/toast"
 
 type UpdateStatus =
   "idle" | "checking" | "up-to-date" | "available" | "downloading" | "disabled" | "error"
@@ -30,9 +33,45 @@ const updateStatusTx: Partial<Record<UpdateStatus, TxKeyPath>> = {
   "error": "settingsScreen:updateError",
 }
 
-export function SettingsScreen() {
+export const SettingsScreen = observer(function SettingsScreen() {
   const { themed, theme, themeContext, setThemeContextOverride } = useAppTheme()
   const navigation = useNavigation<AppStackScreenProps<"Settings">["navigation"]>()
+  const appLockStore = container.get(AppLockStore)
+
+  const [biometricSupport, setBiometricSupport] = useState<BiometricSupport>({
+    isAvailable: false,
+    kind: null,
+  })
+
+  useEffect(() => {
+    const refresh = () => {
+      appLockStore.getBiometricSupport().then(setBiometricSupport)
+    }
+    refresh()
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") refresh()
+    })
+    return () => sub.remove()
+  }, [appLockStore])
+
+  const biometricMethodLabel = translate(
+    `appLock:method_${biometricSupport.kind ?? "biometric"}`,
+  )
+
+  const handleToggleAppLock = (nextEnabled: boolean) => {
+    navigation.navigate("PinCode", { mode: nextEnabled ? "create" : "disable" })
+  }
+
+  const handleToggleBiometric = async (nextEnabled: boolean) => {
+    const ok = await appLockStore.setBiometricEnabled(
+      nextEnabled,
+      translate("appLock:biometricPrompt"),
+      translate("common:cancel"),
+    )
+    if (!ok && nextEnabled) {
+      showWarning(translate("settingsScreen:biometricFailed"))
+    }
+  }
 
   const handleLogout = () => {
     Alert.alert(
@@ -43,8 +82,8 @@ export function SettingsScreen() {
         {
           text: translate("settingsScreen:logout"),
           style: "destructive",
-          onPress: () => {
-            container.get(AuthStore).clearToken()
+          onPress: async () => {
+            await appLockStore.forceLogout()
             navigation.reset({
               index: 0,
               routes: [{ name: "Login" }],
@@ -121,6 +160,46 @@ export function SettingsScreen() {
       </View>
 
       <View style={themed($section)}>
+        <Text
+          tx="settingsScreen:securitySection"
+          preset="formLabel"
+          style={themed($sectionLabel)}
+        />
+        <Switch
+          value={appLockStore.isEnabled}
+          onValueChange={handleToggleAppLock}
+          labelTx="settingsScreen:appLock"
+          helperTx="settingsScreen:appLockHelper"
+          containerStyle={themed($row)}
+        />
+        {appLockStore.isEnabled && (
+          <>
+            <Switch
+              value={appLockStore.isBiometricEnabled}
+              onValueChange={handleToggleBiometric}
+              disabled={!biometricSupport.isAvailable}
+              labelTx="settingsScreen:biometricUnlock"
+              labelTxOptions={{ method: biometricMethodLabel }}
+              helperTx={
+                biometricSupport.isAvailable ? undefined : "settingsScreen:biometricUnavailable"
+              }
+              containerStyle={themed($row)}
+            />
+            <Button
+              tx="settingsScreen:changePin"
+              onPress={() => navigation.navigate("PinCode", { mode: "change" })}
+              style={themed($row)}
+            />
+            <Button
+              tx="settingsScreen:lockNow"
+              onPress={() => appLockStore.lock()}
+              style={themed($row)}
+            />
+          </>
+        )}
+      </View>
+
+      <View style={themed($section)}>
         <Text tx="settingsScreen:updateSection" preset="formLabel" style={themed($sectionLabel)} />
         {updateStatusTx[updateStatus] && (
           <Text tx={updateStatusTx[updateStatus]} size="xs" style={themed($updateStatusText)} />
@@ -153,7 +232,7 @@ export function SettingsScreen() {
       </View>
     </Screen>
   )
-}
+})
 
 const $container: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   justifyContent: "flex-start",

@@ -4,8 +4,11 @@ import { ApiServiceImpl } from "@/data/remote/api/ApiServiceImpl"
 import { MasterApiService } from "@/data/remote/api/master/MasterApiService"
 import { MasterApiServiceImpl } from "@/data/remote/api/master/MasterApiServiceImpl"
 import { Repository } from "@/data/Repository"
+import { AppLockViewModel } from "@/screens/AppLock/AppLockViewModel"
 import { HomeViewModel } from "@/screens/Home/HomeViewModel"
 import { LoginViewModel } from "@/screens/Login/LoginViewModel"
+import { PinCodeViewModel } from "@/screens/PinCode/PinCodeViewModel"
+import { AppLockStore } from "@/stores/appLockStore"
 import { AuthStore } from "@/stores/authStore"
 
 import { container } from "./container"
@@ -76,6 +79,16 @@ describe("container", () => {
     const api = (apiService as unknown as { api: Api }).api
 
     expect((api as unknown as { authStore: AuthStore }).authStore).toBe(authStore)
+  })
+
+  it("resolves AppLockStore as a singleton and injects it into AppLockViewModel and PinCodeViewModel", () => {
+    const lockStore = container.get(AppLockStore)
+    expect(container.get(AppLockStore)).toBe(lockStore)
+
+    const lockVm = container.get(AppLockViewModel)
+    const pinVm = container.get(PinCodeViewModel)
+    expect((lockVm as unknown as { appLockStore: AppLockStore }).appLockStore).toBe(lockStore)
+    expect((pinVm as unknown as { appLockStore: AppLockStore }).appLockStore).toBe(lockStore)
   })
 })
 

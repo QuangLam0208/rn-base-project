@@ -1,11 +1,13 @@
 import { ContainerModule } from "inversify"
 
+import { AppLockViewModel } from "@/screens/AppLock/AppLockViewModel"
 import { CompaniesViewModel } from "@/screens/Companies/CompaniesViewModel"
 import { CoursesViewModel } from "@/screens/Courses/CoursesViewModel"
 import { HomeViewModel } from "@/screens/Home/HomeViewModel"
 import { LoginViewModel } from "@/screens/Login/LoginViewModel"
 import { MentorsViewModel } from "@/screens/Mentors/MentorsViewModel"
 import { MentorDetailViewModel } from "@/screens/MentorDetail/MentorDetailViewModel"
+import { PinCodeViewModel } from "@/screens/PinCode/PinCodeViewModel"
 import { TodoListViewModel } from "@/screens/TodoList/TodoListViewModel"
 
 /**
@@ -22,4 +24,6 @@ export const viewModelModule = new ContainerModule((bind) => {
   bind(MentorDetailViewModel).toSelf()
   bind(CompaniesViewModel).toSelf()
   bind(TodoListViewModel).toSelf()
+  bind(AppLockViewModel).toSelf()
+  bind(PinCodeViewModel).toSelf()
 })
